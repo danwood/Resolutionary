@@ -1,0 +1,53 @@
+<html>
+  <head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/styles/jumbotron-narrow.css" rel="stylesheet">
+    <title>{{title}}</title>
+  </head>
+  <body>
+    <div class="container">
+		<div class="header clearfix">
+		  <nav>
+			<ul class="nav nav-pills pull-right">
+
+{{!  TODO: FIGURE OUT HOW TO MAKE SURE THAT EVERY PAGE GETS 'authenticated' IN ITS CONTEXT. OTHERWISE HEADER WILL RENDER ON MANY PAGES THINKING YOU ARE NOT LOGGED IN! }}
+
+			  {{^authenticated}}
+
+{{^on_login_page}}
+{{! IF PATH IS LOGIN THEN DON'T INCLUDE LOGIN }}
+{{! Requires AuthHandlersWeb loginHandlerGET to put something into "on_login_page" context. I'd need to make a proper branch for this? }}
+
+			  <li role="presentation"><a href="/login">Log In</a></li>
+{{/on_login_page}}
+			  {{/authenticated}}
+			  {{#authenticated}}
+
+{{! One way of doing a POST link, works well for really simple form I guess. }}
+
+			  <li role="presentation"><a href="javascript:;" onclick="var f=document.createElement('form');f.method='POST';f.action='/logout';f.submit();">Logout</a></li>
+
+
+{{! Another simple way of doing a link that actually POSTs. Allows for more complex form. Not sure if we want this in the headers or not… }}
+				<li role="presentation">
+					<form action="newresolution" name="newresolution" method="post">
+					<input type="hidden" name="name" value="">
+					</form>
+					<a href="javascript:document.newresolution.submit()()">New Resolution</a>
+				</li>
+
+			{{/authenticated}}
+
+
+			</ul>
+		  </nav>
+		  <h3 class="text-muted"><a href="/">Resolutionary</a></h3>
+		</div>
+		{{#flash}}
+		<div class="alert alert-danger" role="alert">
+		  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		  <span class="sr-only">Error:</span>
+		  {{flash}}
+		</div>
+		{{/flash}}

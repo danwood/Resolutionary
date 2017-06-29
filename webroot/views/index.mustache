@@ -1,0 +1,52 @@
+{{>header}}
+
+{{^authenticated}}
+<h1>Welcome. Sign up please!</h1>
+
+<p>Don't have an account? <a href="/register">Register Today!</a></p>
+
+{{/authenticated}}
+{{#authenticated}}
+<h1>Hi!</h1>
+<p>Your unique account ID is: <code>{{accountID}}</code></p>
+
+  <div class="container">
+
+    {{#resolutions}}
+    <div class="row">
+      <div class="three columns">
+        <h5><span>{{short}}</span></h5>
+      </div>
+      <div class="six columns">
+        <p><span>{{long}}</span></p>
+      </div>
+      <div class="three columns">
+      </div>
+    </div>
+    {{/resolutions}}
+
+	<div class="row">
+		<div class="u-full-width">
+			<form action="/newresolution" method="POST">
+				<button type="submit" class="btn btn-primary">Create a new resolution</button>
+			</form>
+		</div>
+	</div>
+
+  </div>
+
+
+
+{{/authenticated}}
+
+
+<p>Check out the following resources about Turnstile:</p>
+
+<ul>
+<li><a href="https://github.com/PerfectlySoft/Perfect">Perfect on GitHub</a></li>
+<li><a href="https://github.com/PerfectlySoft/Perfect-Turnstile-PostgreSQL">Perfect Turnstile PostgreSQL Auth on GitHub</a></li>
+<li><a href="https://github.com/PerfectExamples/Perfect-Turnstile-PostgreSQL-Demo">Perfect Turnstile PostgreSQL Demo on GitHub</a></li>
+<li><a href="https://github.com/stormpath/Turnstile">Turnstile on GitHub</a></li>
+</ul>
+
+{{>footer}}

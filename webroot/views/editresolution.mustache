@@ -1,0 +1,83 @@
+{{>header}}
+
+{{! ASSUMES WE ARE AUTHENTICATED TO SEE THIS PAGE. }}
+
+
+<h1>Edit a resolution</h1>
+
+  <div class="container">
+
+    {{#resolutions}}
+    <div class="row">
+      <div class="three columns">
+<h5><span>id: {{id}}</span></h5>
+<h5><span>Creation: {{creationTimeStamp}}</span></h5>
+      </div>
+      <div class="six columns">
+
+<p>Board ID: <input name="boardID" value="{{boardID}}" /></p>
+<p>author ID: <input name="authorID" value="{{authorID}}" /></p>
+
+<p>coauthors: <input name="coauthors" value="{{coauthors}}" /></p>
+
+<p>notes markdown:</p>
+<p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{notesMarkdown}}</textarea></p>
+
+<p id='results'></p>
+
+
+
+
+
+
+      </div>
+      <div class="three columns">
+      </div>
+    </div>
+    {{/resolutions}}
+{{^resolutions}}
+No resolutions…
+{{/resolutions}}
+
+
+  </div>
+
+
+
+
+
+
+<script language=javascript type='text/javascript'>
+var input, output;
+
+function init()
+{
+	input=document.getElementById('textInput');
+	output=document.getElementById('results');
+	sock=new WebSocket('ws://' + window.location.host + '/editor', 'editor');		// ... API, PROTOCOL
+	sock.onmessage=function(evt) { output.innerHTML = evt.data; }
+}
+
+var delayTimer;
+
+function send(evt) {
+
+
+// TODO: COULD WE FORCE THE SEND TO HAPPEN EVERY FEW SECONDS NO MATTER WHAT?
+
+	clearTimeout(delayTimer);
+
+	if (13 == evt.keyCode) {				// If it's a newline, I want to send it immediately.
+		sock.send(input.value);
+	} else {
+		delayTimer = setTimeout(function() {
+			sock.send(input.value);
+		}, 1000); // Delay sending text for a pause in the typing
+	}
+}
+
+window.addEventListener('load', init, false);
+
+</script>
+
+{{>footer}}
