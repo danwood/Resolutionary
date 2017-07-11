@@ -58,21 +58,24 @@ function init()
 	sock.onmessage=function(evt) { output.innerHTML = evt.data; }
 }
 
-var delayTimer;
+var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
+					// Note that hitting return sends text IMMEDIATELY for processing.
 
 function send(evt) {
 
-
-// TODO: COULD WE FORCE THE SEND TO HAPPEN EVERY FEW SECONDS NO MATTER WHAT?
-
-	clearTimeout(delayTimer);
-
-	if (13 == evt.keyCode) {				// If it's a newline, I want to send it immediately.
+	if (13 == evt.keyCode) {				// If it's a newline, send it immediately.
+		clearTimeout(periodicTimer);
+		periodicTimer = null;
 		sock.send(input.value);
 	} else {
-		delayTimer = setTimeout(function() {
-			sock.send(input.value);
-		}, 1000); // Delay sending text for a pause in the typing
+		if (!periodicTimer) {
+
+			periodicTimer = setTimeout(function() {
+				sock.send(input.value);
+				clearTimeout(periodicTimer);
+				periodicTimer = null;
+			}, 1000);
+		}
 	}
 }
 
