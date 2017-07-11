@@ -66,12 +66,12 @@ function send(evt) {
 	if (13 == evt.keyCode) {				// If it's a newline, send it immediately.
 		clearTimeout(periodicTimer);
 		periodicTimer = null;
-		sock.send(input.value);
+		sock.send(input.name + '\n' + input.value);
 	} else {
 		if (!periodicTimer) {
 
 			periodicTimer = setTimeout(function() {
-				sock.send(input.value);
+				sock.send(input.name + '\n' + input.value);
 				clearTimeout(periodicTimer);
 				periodicTimer = null;
 			}, 1000);
