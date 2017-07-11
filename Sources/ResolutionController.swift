@@ -37,18 +37,33 @@ public class EditorHandler: WebSocketSessionHandler {
 		
 		socket.readStringMessage { input, _, _ in
 			
-			guard let input = input else {
+			guard let nameAndMarkdown = input else {
 				socket.close()
 				return
 			}//end guard
 			
-			// convert the input from markdown to HTML
-			let output = input.markdownToHTML ?? ""
 			
-			// sent it back to the request
-			socket.sendStringMessage(string: output, final: true) {
-				self.handleSession(request: request, socket: socket)
-			}//end send
+			let scanner = Scanner(string: nameAndMarkdown)
+			var value: NSString? = ""
+			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&value), let value = value as String? {
+				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil);
+				//let input = scanner.string.substring(from:scanner.scanLocation)
+				
+				let input = scanner.string[scanner.string.scanLocation..<scanner.string.index(scanner.string.startIndex, offsetBy: 0)]
+
+				// convert the input from markdown to HTML
+				let output = input.markdownToHTML ?? ""
+				
+				// sent it back to the request
+				socket.sendStringMessage(string: output, final: true) {
+					self.handleSession(request: request, socket: socket)
+				}//end send
+
+				
+			}
+				
+			
+			
 		}//end readStringMessage
 	}//end handleSession
 }//end handler
