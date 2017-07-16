@@ -36,9 +36,9 @@ let pturnstile = TurnstilePerfectRealm()
 
 
 PostgresConnector.host        = "localhost"
-PostgresConnector.username    = "perfect"
+PostgresConnector.username    = "perfect"				// createuser -D -P perfect
 PostgresConnector.password    = "perfect"
-PostgresConnector.database 	  = "resolutionary"
+PostgresConnector.database 	  = "resolutionary"			// createdb -O perfect resolutionary
 PostgresConnector.port        = 5432
 
 // Set up my tables
