@@ -15,15 +15,15 @@
       </div>
       <div class="six columns">
 
-<p>Board ID: <input name="boardID" value="{{boardID}}" /></p>
-<p>author ID: <input name="authorID" value="{{authorID}}" /></p>
+<p>Board ID: <input name="boardID" value="{{boardID}}"  onkeyup='send(event)' /></p>
+<p>author ID: <input name="authorID" value="{{authorID}}"  onkeyup='send(event)' /></p>
 
-<p>coauthors: <input name="coauthors" value="{{coauthors}}" /></p>
+<p>coauthors: <input name="coauthors" value="{{coauthors}}" onkeyup='send(event)' /></p>
 
 <p>notes markdown:</p>
 <p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{notesMarkdown}}</textarea></p>
 
-<p id='results'></p>
+<p id='noteMarkdownRendered'></p>
 
 
 
@@ -47,15 +47,18 @@ No resolutions…
 
 
 
-<script language=javascript type='text/javascript'>
-var input, output;
+<script>
 
 function init()
 {
-	input=document.getElementById('textInput');
-	output=document.getElementById('results');
 	sock=new WebSocket('ws://' + window.location.host + '/editor', 'editor');		// ... API, PROTOCOL
-	sock.onmessage=function(evt) { output.innerHTML = evt.data; }
+	sock.onmessage=function(evt) {
+		index = evt.data.indexOf("\n");			// Received data should be dest element ID, newline, then the HTML to put into it.
+		destID = evt.data.substr(0, index);
+		newValue = evt.data.substr(index+1);
+		output = document.getElementById(destID);
+		output.innerHTML = newValue;
+	}
 }
 
 var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
@@ -71,7 +74,7 @@ function send(evt) {
 		if (!periodicTimer) {
 
 			periodicTimer = setTimeout(function() {
-				sock.send(input.name + '\n' + input.value);
+				sock.send(input.name + '\n' + input.value);		// Send to server for immediate saving and possibly Markdown translation
 				clearTimeout(periodicTimer);
 				periodicTimer = null;
 			}, 1000);
