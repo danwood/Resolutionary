@@ -47,9 +47,10 @@ public class EditorHandler: WebSocketSessionHandler {
 			var value: NSString? = ""
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&value), let value = value as String? {
 				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil);
-				//let input = scanner.string.substring(from:scanner.scanLocation)
 				
-				let input = scanner.string[scanner.string.scanLocation..<scanner.string.index(scanner.string.startIndex, offsetBy: 0)]
+				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation)
+				let input = scanner.string.substring(from: index)
+
 
 				// convert the input from markdown to HTML
 				let output = input.markdownToHTML ?? ""

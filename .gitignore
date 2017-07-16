@@ -68,3 +68,5 @@ Tests/
 /StORMlog.txt
 /requests.log
 /resolutionary.xcodeproj/project.pbxproj
+Package.swift
+resolutionary.xcscheme
