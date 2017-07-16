@@ -23,7 +23,7 @@
 <p>notes markdown:</p>
 <p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{notesMarkdown}}</textarea></p>
 
-<p id='noteMarkdownRendered'></p>
+<div id='notesMarkdownRendered'></div>
 
 
 
@@ -57,24 +57,30 @@ function init()
 		destID = evt.data.substr(0, index);
 		newValue = evt.data.substr(index+1);
 		output = document.getElementById(destID);
-		output.innerHTML = newValue;
+		if (output) {
+			output.innerHTML = newValue;
+		} else {
+			alert('Missing output ' + destID);
+		}
 	}
 }
 
 var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
 					// Note that hitting return sends text IMMEDIATELY for processing.
+var evtTarget;		// Save event that timer is referring to
 
 function send(evt) {
 
 	if (13 == evt.keyCode) {				// If it's a newline, send it immediately.
 		clearTimeout(periodicTimer);
 		periodicTimer = null;
-		sock.send(input.name + '\n' + input.value);
+		sock.send(evt.currentTarget.name + '\n' + evt.currentTarget.value);
 	} else {
 		if (!periodicTimer) {
 
+			evtTarget = evt.currentTarget;
 			periodicTimer = setTimeout(function() {
-				sock.send(input.name + '\n' + input.value);		// Send to server for immediate saving and possibly Markdown translation
+				sock.send(evtTarget.name + '\n' + evtTarget.value);		// Send to server for immediate saving and possibly Markdown translation
 				clearTimeout(periodicTimer);
 				periodicTimer = null;
 			}, 1000);

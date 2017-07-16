@@ -48,9 +48,9 @@ public class EditorHandler: WebSocketSessionHandler {
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&inputName), let inputName = inputName as String? {
 				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil);
 				
-				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation)
+				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation+1)
 				let inputValue = scanner.string.substring(from: index)
-				if inputValue.hasSuffix("Markdown") {
+				if inputName.hasSuffix("Markdown") {
 
 					// convert the input from markdown to HTML
 					let output = inputName + "Rendered" + "\n" + (inputValue.markdownToHTML ?? "")
