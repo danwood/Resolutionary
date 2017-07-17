@@ -21,7 +21,7 @@
 <p>coauthors: <input name="coauthors" value="{{coauthors}}" onkeyup='send(event)' /></p>
 
 <p>notes markdown:</p>
-<p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
+<p><textarea id='notesMarkdown' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
@@ -51,6 +51,8 @@ No resolutions…
 
 <script>
 
+var sock;
+
 function init()
 {
 	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolutions}}/{{id}}{{/resolutions}}', 'editor');		// ... API, PROTOCOL
@@ -65,6 +67,11 @@ function init()
 			alert('Missing output ' + destID);
 		}
 	}
+	sock.onopen = function() {
+		// Maybe I could make this more generic, find all textAreas with Markdown and render
+		var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
+		sock.send("notesMarkdown\n" + notesMarkdown);
+	};
 }
 
 var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
