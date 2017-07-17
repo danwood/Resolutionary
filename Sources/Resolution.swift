@@ -22,6 +22,8 @@ class Resolution: PostgresStORM {
 	var coauthors: String = ""
 	var notesMarkdown: String = ""
 
+	var title: String = ""
+
 	var creationTimeStamp: Date = Date()
 
 	override open func table() -> String { return "resolutions" }
@@ -31,6 +33,7 @@ class Resolution: PostgresStORM {
 		boardID = this.data["boardid"] as? Int ?? 0
 		authorID = this.data["authorid"] as? Int ?? 0
 		
+		title	= this.data["title"] as? String	?? ""
 		coauthors	= this.data["coauthors"] as? String	?? ""
 		notesMarkdown = this.data["notesmarkdown"] as? String	?? ""
 
@@ -57,9 +60,10 @@ class Resolution: PostgresStORM {
 			"id": self.id,
 			"boardID": self.boardID,
 			"authorID": self.authorID,
-			"coauthors": self.authorID,
+			"coauthors": self.coauthors,
 			"notesMarkdown": self.notesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
+			"title": self.title,
 		]
 	}
 	
