@@ -21,7 +21,9 @@
 <p>coauthors: <input name="coauthors" value="{{coauthors}}" onkeyup='send(event)' /></p>
 
 <p>notes markdown:</p>
-<p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{notesMarkdown}}</textarea></p>
+<p><textarea id='textInput' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
+
+{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
 <div id='notesMarkdownRendered'></div>
 
@@ -51,7 +53,7 @@ No resolutions…
 
 function init()
 {
-	sock=new WebSocket('ws://' + window.location.host + '/editor', 'editor');		// ... API, PROTOCOL
+	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolutions}}/{{id}}{{/resolutions}}', 'editor');		// ... API, PROTOCOL
 	sock.onmessage=function(evt) {
 		index = evt.data.indexOf("\n");			// Received data should be dest element ID, newline, then the HTML to put into it.
 		destID = evt.data.substr(0, index);
@@ -83,7 +85,7 @@ function send(evt) {
 				sock.send(evtTarget.name + '\n' + evtTarget.value);		// Send to server for immediate saving and possibly Markdown translation
 				clearTimeout(periodicTimer);
 				periodicTimer = null;
-			}, 1000);
+			}, 3000);
 		}
 	}
 }

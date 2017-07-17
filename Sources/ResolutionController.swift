@@ -32,6 +32,12 @@ public class EditorHandler: WebSocketSessionHandler {
 	
 	public let socketProtocol : String? = PROTOCOL
 	
+	let resolution : Resolution
+	
+	init(_ resolution: Resolution) {
+		self.resolution = resolution
+	}
+	
 	// This function is called by the WebSocketHandler once the connection has been established.
 	public func handleSession(request: HTTPRequest, socket: WebSocket) {
 		
@@ -46,10 +52,26 @@ public class EditorHandler: WebSocketSessionHandler {
 			let scanner = Scanner(string: nameAndMarkdown)
 			var inputName: NSString? = ""
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&inputName), let inputName = inputName as String? {
-				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil);
-				
+				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil)
 				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation+1)
 				let inputValue = scanner.string.substring(from: index)
+				
+				// Is there some way to dynamically set setValue forKey ?  For now just do brute force
+				switch(inputName) {
+					case "notesMarkdown":
+						self.resolution.notesMarkdown = inputValue
+					default:
+						print("NOT HANDLED: ##### Set \(inputName) of \(self.resolution) to \(inputValue)")
+				}
+				do {
+					try self.resolution.save()
+				}
+				catch {
+					print("Unable to save resolution")
+				}
+				
+				
+								
 				if inputName.hasSuffix("Markdown") {
 
 					// convert the input from markdown to HTML
@@ -60,7 +82,6 @@ public class EditorHandler: WebSocketSessionHandler {
 						self.handleSession(request: request, socket: socket)
 					}//end send
 				}
-				
 				
 
 				
@@ -78,14 +99,14 @@ public class ResolutionController {
 	public static func makeRoutes() -> Routes {
 		
 		// Add old-fashioned? route style
-		var routes = Routes();
+		var routes = Routes()
 		
 		routes.add(method: .post, uri: "/newresolution", handler: ResolutionController.newResolutionHandlerPOST)
 
 		routes.add(method: .get, uri: "/editresolution/{id}", handler: ResolutionController.editResolutionHandlerGET)
 		
 		// Add the endpoint for the WebSocket example system
-		routes.add(method: .get, uri: "/editor", handler: {
+		routes.add(method: .get, uri: "/editor/{id}", handler: {
 			request, response in
 			
 			// To add a WebSocket service, set the handler to WebSocketHandler.
@@ -93,13 +114,27 @@ public class ResolutionController {
 			WebSocketHandler(handlerProducer: {
 				(request: HTTPRequest, protocols: [String]) -> WebSocketSessionHandler? in
 				
-				// Check to make sure the client is requesting our "echo" service.
+				// Check to make sure the client is requesting our service.
 				guard protocols.contains("editor") else {
 					return nil
 				}
+
+				guard let idString = request.urlVariables["id"],
+					let id = Int(idString) else {
+						return nil
+				}
+								
+				do {
+					let resolution = try Resolution.getResolution(matchingId: id)
+
+					// Return our service handler.
+					return EditorHandler(resolution)
+
+				}
+				catch {
+					return nil
+				}
 				
-				// Return our service handler.
-				return EditorHandler()
 			}).handleRequest(request: request, response: response)
 		})
 		
