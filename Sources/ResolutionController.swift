@@ -150,11 +150,22 @@ public class ResolutionController {
 
 		do {
 
+			// Create empty resolution
 			let resolution = Resolution()
 			resolution.creationTimeStamp = Date()
 			try resolution.save { id in
 				resolution.id = id as! Int
 			}
+			
+			// Create empty resolution version that corresponds to this resolution
+			let resolutionVersion = ResolutionVersion()
+			resolutionVersion.creationTimeStamp = Date()
+			resolutionVersion.resolutionID = resolution.id
+			try resolutionVersion.save { id in
+				resolutionVersion.id = id as! Int
+			}
+
+			
 			response.redirect(path: "/editresolution/" + String(resolution.id) )
 		} catch {
 			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
@@ -177,6 +188,13 @@ public class ResolutionController {
 
 			var values = MustacheEvaluationContext.MapType()
 			values["resolutions"] = Resolution.resolutionsToDictionary( [ resolution ] )
+			
+			let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId: id)
+
+			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+
+			
+			
 			
 			response.render(template: "editresolution", context: values)
 			
