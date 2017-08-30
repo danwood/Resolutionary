@@ -7,41 +7,49 @@
 
   <div class="container">
 
-    {{#resolutions}}
     <div class="row">
-      <div class="three columns">
+      <div class="six columns">
+
+{{#resolutions}}
+
 <h5><span>id: {{id}}</span></h5>
 <h5><span>Creation: {{creationTimeStamp}}</span></h5>
-      </div>
-      <div class="six columns">
+
+<p>Title: <input name="title" value="{{title}}"  onkeyup='send(event)' /></p>
+<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onkeyup='send(event)' /></p>
 
 <p>Board ID: <input name="boardID" value="{{boardID}}"  onkeyup='send(event)' /></p>
 <p>author ID: <input name="authorID" value="{{authorID}}"  onkeyup='send(event)' /></p>
 
-<p>coauthors: <input name="coauthors" value="{{coauthors}}" onkeyup='send(event)' /></p>
+<p>notes about this resolution:</p>
+<p><textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5" onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
-<p>PUBLUC notes markdown:</p>
-<p><textarea id='publicNotesMarkdown' name="publicNotesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{publicNotesMarkdown}}}</textarea></p>
+<div id='notesMarkdownRendered'></div>
 
-<div id='publicNotesMarkdownRendered'></div>
+{{/resolutions}}
 
-<p>PRIVATE notes markdown:</p>
-<p><textarea id='privateNotesMarkdown' name="privateNotesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{privateNotesMarkdown}}}</textarea></p>
+{{#resolution_versions}}
 
-<div id='privateNotesMarkdownRendered'></div>
+<p>Resolution Body:</p>
+<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' 'onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
 
+{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
+<div id='textMarkdownRendered'></div>
 
-
+{{/resolution_versions}}
+{{^resolution_versions}}
+<p>MISSING resolution version!</p>
+{{/resolution_versions}}
 
 
       </div>
       <div class="three columns">
+			<input type="button" value="Publish as new version" name="Publish" />
       </div>
     </div>
-    {{/resolutions}}
 {{^resolutions}}
 No resolutions…
 {{/resolutions}}
@@ -74,13 +82,9 @@ function init()
 	}
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
-		var publicNotesMarkdown = document.getElementById('publicNotesMarkdown').innerHTML;
-		sock.send("publicNotesMarkdown\n" + publicNotesMarkdown);
-
-	var privateNotesMarkdown = document.getElementById('privateNotesMarkdown').innerHTML;
-	sock.send("privateNotesMarkdown\n" + privateNotesMarkdown);
-
-};
+		var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
+		sock.send("notesMarkdown\n" + notesMarkdown);
+	};
 }
 
 var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
