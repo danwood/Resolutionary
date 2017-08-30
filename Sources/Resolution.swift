@@ -20,7 +20,8 @@ class Resolution: PostgresStORM {
 	var authorID: Int = 0
 	
 	var coauthors: String = ""
-	var notesMarkdown: String = ""
+	var publicNotesMarkdown: String = ""
+	var privateNotesMarkdown: String = ""
 
 	var creationTimeStamp: Date = Date()
 
@@ -32,7 +33,8 @@ class Resolution: PostgresStORM {
 		authorID = this.data["authorid"] as? Int ?? 0
 		
 		coauthors	= this.data["coauthors"] as? String	?? ""
-		notesMarkdown = this.data["notesmarkdown"] as? String	?? ""
+		publicNotesMarkdown = this.data["publicnotesmarkdown"] as? String	?? ""
+		privateNotesMarkdown = this.data["privatenotesmarkdown"] as? String	?? ""
 
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss a Z"				// WOW that was hard to reverse-engineer from what seems to be stored!
@@ -58,7 +60,8 @@ class Resolution: PostgresStORM {
 			"boardID": self.boardID,
 			"authorID": self.authorID,
 			"coauthors": self.authorID,
-			"notesMarkdown": self.notesMarkdown,
+			"publicNotesMarkdown": self.publicNotesMarkdown,
+			"privateNotesMarkdown": self.privateNotesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
 		]
 	}

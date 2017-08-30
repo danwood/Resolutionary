@@ -20,12 +20,17 @@
 
 <p>coauthors: <input name="coauthors" value="{{coauthors}}" onkeyup='send(event)' /></p>
 
-<p>notes markdown:</p>
-<p><textarea id='notesMarkdown' name="notesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
-
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
-<div id='notesMarkdownRendered'></div>
+<p>PUBLUC notes markdown:</p>
+<p><textarea id='publicNotesMarkdown' name="publicNotesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{publicNotesMarkdown}}}</textarea></p>
+
+<div id='publicNotesMarkdownRendered'></div>
+
+<p>PRIVATE notes markdown:</p>
+<p><textarea id='privateNotesMarkdown' name="privateNotesMarkdown" cols=60 rows=20 onkeyup='send(event)'>{{{privateNotesMarkdown}}}</textarea></p>
+
+<div id='privateNotesMarkdownRendered'></div>
 
 
 
@@ -69,9 +74,13 @@ function init()
 	}
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
-		var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
-		sock.send("notesMarkdown\n" + notesMarkdown);
-	};
+		var publicNotesMarkdown = document.getElementById('publicNotesMarkdown').innerHTML;
+		sock.send("publicNotesMarkdown\n" + publicNotesMarkdown);
+
+	var privateNotesMarkdown = document.getElementById('privateNotesMarkdown').innerHTML;
+	sock.send("privateNotesMarkdown\n" + privateNotesMarkdown);
+
+};
 }
 
 var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
