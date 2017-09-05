@@ -34,6 +34,8 @@ RequestLogFile.location = "./requests.log"
 // Used later in script for the Realm and how the user authenticates.
 let pturnstile = TurnstilePerfectRealm()
 
+// psql -d resolutionary
+// psql -c "drop database resolutionary"
 
 PostgresConnector.host        = "localhost"
 PostgresConnector.username    = "perfect"				// createuser -D -P perfect

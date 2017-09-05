@@ -54,6 +54,12 @@ class ResolutionVersion: PostgresStORM {
 	func asDictionary() -> [String: Any] {
 		return [
 			"id": self.id,
+			"resolutionID": self.resolutionID,
+			"version": self.version,
+			"title": self.title,
+			"coauthors": self.coauthors,
+			"textMarkdown": self.textMarkdown,
+			"isPublished": self.isPublished,
 		]
 	}
 	
