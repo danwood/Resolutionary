@@ -48,15 +48,10 @@
 
 {{#resolution_versions}}
 
-<p>ID: {{id}}</p>
-<p>Title: {{title}}</p>
-<p>Co-Authors: {{coauthors}}</p>
+<h3>ID: <a href="/editresolution/{{resolutionID}}/{{id}}">{{id}}</a></h3>
 
-<p>Resolution Body:{{textMarkdown}}</p>
+{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
 
-{{/resolution_versions}}
-{{^resolution_versions}}
-<p>No versions found for this resolution!</p>
 {{/resolution_versions}}
 
 

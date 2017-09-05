@@ -91,15 +91,6 @@ class ResolutionVersion: PostgresStORM {
 		return getObj
 	}
 
-	static func getResolutionVersions(matchingShort short:String) throws -> [ResolutionVersion] {
-		let getObj = ResolutionVersion()
-		var findObj = [String: Any]()
-		findObj["short"] = short
-		try getObj.find(findObj)
-		return getObj.rows()
-	}
-	
-
 	static func resolutionVersionsToDictionary(_ resolutionVersions: [ResolutionVersion]) -> [[String: Any]] {
 		var resolutionVersionsDict: [[String: Any]] = []
 		for row in resolutionVersions {

@@ -118,6 +118,8 @@ public class ResolutionController {
 
 		routes.add(method: .get, uri: "/editresolution/{id}", handler: ResolutionController.editResolutionHandlerGET)
 		
+		routes.add(method: .get, uri: "/editresolution/{id}/{versionid}", handler: ResolutionController.editResolutionHandlerGET)
+
 		// Add the endpoint for the WebSocket example system
 		routes.add(method: .get, uri: "/editor/{id}", handler: {
 			request, response in
@@ -196,17 +198,30 @@ public class ResolutionController {
 			}
 
 			let resolution = try Resolution.getResolution(matchingId: id)
-
+			
 			var values = MustacheEvaluationContext.MapType()
 			values["resolutions"] = Resolution.resolutionsToDictionary( [ resolution ] )
 			
-			// Get the current resolution version in context
-			let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
-			values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
-
 			// Get all resolution versions too
 			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
 			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( resolutionVersions )
+
+			// Get latest version, or specified version
+			
+			if let versionIdString = request.urlVariables["version"]
+			{
+				if let versionId = Int(versionIdString)
+				{
+					// Get the current resolution version in context
+					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingId: versionId)
+					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+				}
+			}
+			if (values["resolution_version"] == nil) {
+				// Get the current resolution version in context
+				let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+				values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+			}
 
 			
 			
