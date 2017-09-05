@@ -2,7 +2,9 @@
 ID
 Resolution ID → Resolution
 Version Number
-Text (free-form, markdown)
+textMarkdown (free-form, markdown)
+title
+CoAuthors (free form text; author responsible for crediting; allows non users to chime in and get credit)
 [_] IsPublished — allow incremental changes before new version is public. Version number won’t increment until it’s published.)
 CreationTimeStamp
 */
@@ -17,6 +19,8 @@ class ResolutionVersion: PostgresStORM {
 	var id: Int = 0
 	var resolutionID: Int = 0
 	var version: Int = 0
+	var title: String = ""
+	var coauthors: String = ""
 	var textMarkdown: String = ""
 	var isPublished: Bool = false;
 	
@@ -29,6 +33,8 @@ class ResolutionVersion: PostgresStORM {
 		resolutionID = this.data["resolutionid"] as? Int ?? 0
 		version = this.data["id"] as? Int ?? 0
 		
+		title	= this.data["title"] as? String	?? ""
+		coauthors	= this.data["coauthors"] as? String	?? ""
 		textMarkdown	= this.data["textmarkdown"] as? String	?? ""
 		isPublished = this.data["ispublished"] as? Bool ?? false
 

@@ -2,7 +2,6 @@
 Board → Board
 Current Version ID
 Author → Person
-CoAuthors (free form text; author responsible for crediting; allows non users to chime in and get credit)
 Notes (free-form, introduction to resolution, why written, requests for improvement, etc.)
 CreationTimeStamp
 */
@@ -19,10 +18,8 @@ class Resolution: PostgresStORM {
 	var boardID: Int = 0
 	var authorID: Int = 0
 	
-	var coauthors: String = ""
 	var notesMarkdown: String = ""
 
-	var title: String = ""
 
 	var creationTimeStamp: Date = Date()
 
@@ -33,8 +30,6 @@ class Resolution: PostgresStORM {
 		boardID = this.data["boardid"] as? Int ?? 0
 		authorID = this.data["authorid"] as? Int ?? 0
 		
-		title	= this.data["title"] as? String	?? ""
-		coauthors	= this.data["coauthors"] as? String	?? ""
 		notesMarkdown = this.data["notesmarkdown"] as? String	?? ""
 
 		let dateFormatter = DateFormatter()
@@ -60,10 +55,8 @@ class Resolution: PostgresStORM {
 			"id": self.id,
 			"boardID": self.boardID,
 			"authorID": self.authorID,
-			"coauthors": self.coauthors,
 			"notesMarkdown": self.notesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
-			"title": self.title,
 		]
 	}
 	

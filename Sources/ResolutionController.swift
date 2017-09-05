@@ -61,9 +61,11 @@ public class EditorHandler: WebSocketSessionHandler {
 				case "notesMarkdown":
 					self.resolution.notesMarkdown = inputValue
 				case "title":
-					self.resolution.title = inputValue
+					inputValue
+				//			self.resolution.title = inputValue
 				case "coauthors":
-					self.resolution.coauthors = inputValue
+					inputValue
+				//	self.resolution.coauthors = inputValue
 				default:
 					print("NOT HANDLED: ##### Set \(inputName) of \(self.resolution) to \(inputValue)")
 				}
