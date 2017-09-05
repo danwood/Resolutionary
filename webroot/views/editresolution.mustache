@@ -93,9 +93,9 @@ function init()
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
 	var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
-	sock.send("notesMarkdown\n" + notesMarkdown);
+sock.send("#notesMarkdown\n" + notesMarkdown);	// # = return processsed markdown without saving
 	var textMarkdown = document.getElementById('textMarkdown').innerHTML;
-	sock.send("textMarkdown\n" + textMarkdown);
+sock.send("#textMarkdown\n" + textMarkdown);	// # = return processsed markdown without saving
 	};
 }
 

@@ -53,6 +53,8 @@ public class EditorHandler: WebSocketSessionHandler {
 			
 			let scanner = Scanner(string: nameAndMarkdown)
 			var inputName: NSString? = ""
+			var ignore = scanner.scanString("#", into:nil)
+			
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&inputName), let inputName = inputName as String? {
 				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil)
 				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation+1)
@@ -76,14 +78,14 @@ public class EditorHandler: WebSocketSessionHandler {
 				default:
 					print("NOT HANDLED: ##### Set \(inputName) of \(self.resolution) to \(inputValue)")
 				}
-				do {
-					try toSave.save()
+				if (!ignore) {
+					do {
+						try toSave.save()
+					}
+					catch {
+						print("Unable to save resolution")
+					}
 				}
-				catch {
-					print("Unable to save resolution")
-				}
-				
-				
 								
 				if inputName.hasSuffix("Markdown") {
 
@@ -212,11 +214,12 @@ public class ResolutionController {
 			{
 				if let versionId = Int(versionIdString)
 				{
-					// Get the current resolution version in context
-					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingId: versionId)
+					// Get the current resolution version in context.
+					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingId: versionId)
 					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 				}
 			}
+			// If we couldn't parse, or find given ID, get the lastest version.
 			if (values["resolution_version"] == nil) {
 				// Get the current resolution version in context
 				let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
