@@ -80,9 +80,7 @@ class ResolutionVersion: PostgresStORM {
 	// Look up (all?) resolution versions matching the resolution ID
 	static func getResolutionVersion(matchingResolutionId resolutionID:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()
-		var findObj = [String: Any]()
-		findObj["resolutionID"] = "\(resolutionID)"
-		try getObj.find(findObj)
+		try getObj.select(whereclause: "resolutionID != $1", params: [resolutionID], orderby: ["id"], cursor: StORMCursor(limit: 1, offset: 0))
 		return getObj
 	}
 	

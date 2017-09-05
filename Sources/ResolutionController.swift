@@ -33,9 +33,11 @@ public class EditorHandler: WebSocketSessionHandler {
 	public let socketProtocol : String? = PROTOCOL
 	
 	let resolution : Resolution
+	let resolutionVersion : ResolutionVersion
 	
-	init(_ resolution: Resolution) {
+	init(_ resolution: Resolution, version: ResolutionVersion) {
 		self.resolution = resolution
+		self.resolutionVersion = version
 	}
 	
 	// This function is called by the WebSocketHandler once the connection has been established.
@@ -56,21 +58,23 @@ public class EditorHandler: WebSocketSessionHandler {
 				let index = scanner.string.index(scanner.string.startIndex, offsetBy: scanner.scanLocation+1)
 				let inputValue = scanner.string.substring(from: index)
 				
+				var toSave : PostgresStORM = self.resolution;
+				
 				// Is there some way to dynamically set setValue forKey ?  For now just do brute force
 				switch(inputName) {
 				case "notesMarkdown":
 					self.resolution.notesMarkdown = inputValue
 				case "title":
-					inputValue
-				//			self.resolution.title = inputValue
+					self.resolutionVersion.title = inputValue
+					toSave = self.resolutionVersion;
 				case "coauthors":
-					inputValue
-				//	self.resolution.coauthors = inputValue
+					self.resolutionVersion.coauthors = inputValue
+					toSave = self.resolutionVersion;
 				default:
 					print("NOT HANDLED: ##### Set \(inputName) of \(self.resolution) to \(inputValue)")
 				}
 				do {
-					try self.resolution.save()
+					try toSave.save()
 				}
 				catch {
 					print("Unable to save resolution")
@@ -133,8 +137,10 @@ public class ResolutionController {
 				do {
 					let resolution = try Resolution.getResolution(matchingId: id)
 
+					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId: id)
+
 					// Return our service handler.
-					return EditorHandler(resolution)
+					return EditorHandler(resolution, version:resolutionVersion)
 
 				}
 				catch {
