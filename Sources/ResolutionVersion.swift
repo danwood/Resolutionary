@@ -31,7 +31,7 @@ class ResolutionVersion: PostgresStORM {
 	override func to(_ this: StORMRow) {
 		id = this.data["id"] as? Int ?? 0
 		resolutionID = this.data["resolutionid"] as? Int ?? 0
-		version = this.data["id"] as? Int ?? 0
+		version = this.data["version"] as? Int ?? 0
 		
 		title	= this.data["title"] as? String	?? ""
 		coauthors	= this.data["coauthors"] as? String	?? ""

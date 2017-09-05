@@ -206,7 +206,7 @@ public class ResolutionController {
 
 			// Get all resolution versions too
 			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
-			values["resolution_versiona"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( resolutionVersions )
 
 			
 			
