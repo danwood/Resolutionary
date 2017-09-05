@@ -67,6 +67,9 @@ public class EditorHandler: WebSocketSessionHandler {
 				case "title":
 					self.resolutionVersion.title = inputValue
 					toSave = self.resolutionVersion;
+				case "textMarkdown":
+					self.resolutionVersion.textMarkdown = inputValue
+					toSave = self.resolutionVersion;
 				case "coauthors":
 					self.resolutionVersion.coauthors = inputValue
 					toSave = self.resolutionVersion;
@@ -137,7 +140,7 @@ public class ResolutionController {
 				do {
 					let resolution = try Resolution.getResolution(matchingId: id)
 
-					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId: id)
+					let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
 
 					// Return our service handler.
 					return EditorHandler(resolution, version:resolutionVersion)
@@ -197,11 +200,14 @@ public class ResolutionController {
 			var values = MustacheEvaluationContext.MapType()
 			values["resolutions"] = Resolution.resolutionsToDictionary( [ resolution ] )
 			
-			let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId: id)
+			// Get the current resolution version in context
+			let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+			values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 
-			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+			// Get all resolution versions too
+			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
+			values["resolution_versiona"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 
-			
 			
 			
 			response.render(template: "editresolution", context: values)

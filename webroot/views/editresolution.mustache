@@ -28,6 +28,24 @@
 
 {{/resolutions}}
 
+{{#resolution_version}}
+
+<p>Title: <input name="title" value="{{title}}"  onkeyup='send(event)' /></p>
+<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onkeyup='send(event)' /></p>
+
+<p>Resolution Body:</p>
+<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
+
+{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
+
+<div id='textMarkdownRendered'></div>
+
+{{/resolution_version}}
+{{^resolution_version}}
+<p>MISSING resolution version!</p>
+{{/resolution_version}}
+
+
 {{#resolution_versions}}
 
 <p>Title: <input name="title" value="{{title}}"  onkeyup='send(event)' /></p>
@@ -83,8 +101,10 @@ function init()
 	}
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
-		var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
-		sock.send("notesMarkdown\n" + notesMarkdown);
+	var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
+	sock.send("notesMarkdown\n" + notesMarkdown);
+	var textMarkdown = document.getElementById('textMarkdown').innerHTML;
+	sock.send("textMarkdown\n" + textMarkdown);
 	};
 }
 
@@ -94,7 +114,7 @@ var evtTarget;		// Save event that timer is referring to
 
 function send(evt) {
 
-	if (13 == evt.keyCode) {				// If it's a newline, send it immediately.
+	if (13 == evt.keyCode) {				// If a newline, send it immediately.
 		clearTimeout(periodicTimer);
 		periodicTimer = null;
 		sock.send(evt.currentTarget.name + '\n' + evt.currentTarget.value);
