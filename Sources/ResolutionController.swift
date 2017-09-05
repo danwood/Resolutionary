@@ -210,13 +210,19 @@ public class ResolutionController {
 
 			// Get latest version, or specified version
 			
-			if let versionIdString = request.urlVariables["version"]
+			if let versionIdString = request.urlVariables["versionid"]
 			{
 				if let versionId = Int(versionIdString)
 				{
 					// Get the current resolution version in context.
 					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingId: versionId)
 					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+				}
+				else
+				{
+					response.completed(status: .badRequest)
+					return
+
 				}
 			}
 			// If we couldn't parse, or find given ID, get the lastest version.

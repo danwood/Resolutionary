@@ -79,10 +79,7 @@ class ResolutionVersion: PostgresStORM {
 	
 	static func getResolutionVersion(matchingResolutionId resolutionId:Int, matchingId id:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()
-		var findObj = [String: Any]()
-		findObj["id"] = "\(id)"
-		findObj["resolutionId"] = "\(resolutionId)"
-		try getObj.find(findObj)
+		try getObj.select(whereclause: "id = $1 AND resolutionId = $2", params: [id, resolutionId], orderby: ["resolutionId DESC"])
 		return getObj
 	}
 
