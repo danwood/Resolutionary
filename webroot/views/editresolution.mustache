@@ -48,19 +48,15 @@
 
 {{#resolution_versions}}
 
-<p>Title: <input name="title" value="{{title}}"  onkeyup='send(event)' /></p>
-<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onkeyup='send(event)' /></p>
+<p>ID: {{id}}</p>
+<p>Title: {{title}}</p>
+<p>Co-Authors: {{coauthors}}</p>
 
-<p>Resolution Body:</p>
-<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' 'onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
-
-{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
-
-<div id='textMarkdownRendered'></div>
+<p>Resolution Body:{{textMarkdown}}</p>
 
 {{/resolution_versions}}
 {{^resolution_versions}}
-<p>No versions have been created for this resolution!</p>
+<p>No versions found for this resolution!</p>
 {{/resolution_versions}}
 
 
