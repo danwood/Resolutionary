@@ -16,11 +16,11 @@
 <h5><span>Creation: {{creationTimeStamp}}</span></h5>
 
 
-<p>Board ID: <input name="boardID" value="{{boardID}}"  onkeyup='send(event)' /></p>
-<p>author ID: <input name="authorID" value="{{authorID}}"  onkeyup='send(event)' /></p>
+<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+<p>author ID: <input name="authorID" value="{{authorID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 
 <p>notes about this resolution:</p>
-<p><textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5" onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
+<p><textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5" onblur='send(event)' onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
@@ -30,11 +30,11 @@
 
 {{#resolution_version}}
 
-<p>Title: <input name="title" value="{{title}}"  onkeyup='send(event)' /></p>
-<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onkeyup='send(event)' /></p>
+<p>Title: <input name="title" value="{{title}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 
 <p>Resolution Body:</p>
-<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
+<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' onblur='send(event)' onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
@@ -105,7 +105,7 @@ var evtTarget;		// Save event that timer is referring to
 
 function send(evt) {
 
-	if (13 == evt.keyCode) {				// If a newline, send it immediately.
+	if (!(evt instanceof KeyboardEvent) || 13 == evt.keyCode) {				// If a newline, send it immediately.
 		clearTimeout(periodicTimer);
 		periodicTimer = null;
 		sock.send(evt.currentTarget.name + '\n' + evt.currentTarget.value);
