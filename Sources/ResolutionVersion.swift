@@ -39,7 +39,7 @@ class ResolutionVersion: PostgresStORM {
 		isPublished = this.data["ispublished"] as? Bool ?? false
 
 		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss a Z"				// WOW that was hard to reverse-engineer from what seems to be stored!
+		dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"                // WOW that was hard to reverse-engineer from what seems to be stored!
 		// https://stackoverflow.com/questions/2993578/whats-wrong-with-how-im-using-nsdateformatter
 		let dateString = this.data["creationtimestamp"] as? String ?? ""
 		creationTimeStamp = dateFormatter.date(from: dateString) ?? Date(timeIntervalSinceReferenceDate:10000000000)
