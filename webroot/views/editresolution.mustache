@@ -10,7 +10,7 @@
 
 {{#resolutions}}
 
-			<h5><span>id: {{id}}</span></h5>
+			<h5><span>Resolution ID: {{id}}</span></h5>
 			<h5><span>Creation: {{creationTimeStamp}}</span></h5>
 
 			<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
@@ -33,7 +33,7 @@
 
 {{#isPublished}}
 
-			<p>Version: {{version}}</p>
+			<p>Version: {{version}} (hidden ID {{id}})</p>
 			<p>Title: {{title}}</p>
 			<p>Co-Authors: {{coauthors}}</p>
 
@@ -60,7 +60,7 @@
 
 			<div id='textMarkdownRendered'></div>
 
-			<form action = "/newversion/{{id}}" method = "post">
+			<form action = "/newversion/{{resolutionID}}" method = "post">
 				<input type="submit" value="Publish as new version" name="Publish" />
 			</form>
 
@@ -73,8 +73,14 @@
 
 {{#resolution_versions}}
 
-			<h3>Version: <a href="/editresolution/{{resolutionID}}/{{version}}">{{version}}</a></h3>
-			{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
+{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
+
+{{#isPublished}}
+			<h3>Published Version: <a href="/editresolution/{{resolutionID}}/{{version}}">{{version}}</a></h3>
+{{/isPublished}}
+{{^isPublished}}
+			<h3><a href="/editresolution/{{resolutionID}}">Working Version {{version}}</a></h3>
+{{/isPublished}}
 
 {{/resolution_versions}}
 

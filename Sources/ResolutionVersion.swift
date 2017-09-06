@@ -102,6 +102,11 @@ class ResolutionVersion: PostgresStORM {
 	static func getLastResolutionVersion(matchingResolutionId resolutionID:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()
 		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["version DESC"], cursor: StORMCursor(limit: 1, offset: 0))
+		
+		// Note: We are limiting to 1, but there may be more than one result ignoring the limits, so makeRow() is *not* called.
+		// So we can't just return the getObj as if it were automatically instantiated!
+		getObj.makeRow()
+		
 		return getObj
 	}
 
