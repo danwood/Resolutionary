@@ -57,6 +57,7 @@ class Resolution: PostgresStORM {
 			"authorID": self.authorID,
 			"notesMarkdown": self.notesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
+			"notesMarkdownRendered":(self.notesMarkdown.markdownToHTML ?? "")			// Also this in context!
 		]
 	}
 	

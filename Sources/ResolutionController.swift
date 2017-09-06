@@ -118,9 +118,11 @@ public class ResolutionController {
 		
 		routes.add(method: .post, uri: "/newresolution", handler: ResolutionController.newResolutionHandlerPOST)
 
+		routes.add(method: .post, uri: "/newversion/{id}", handler: ResolutionController.newResolutionVersionHandlerPOST)
+
 		routes.add(method: .get, uri: "/editresolution/{id}", handler: ResolutionController.editResolutionHandlerGET)
 		
-		routes.add(method: .get, uri: "/editresolution/{id}/{versionid}", handler: ResolutionController.editResolutionHandlerGET)
+		routes.add(method: .get, uri: "/editresolution/{id}/{version}", handler: ResolutionController.editResolutionHandlerGET)
 
 		// Add the endpoint for the WebSocket example system
 		routes.add(method: .get, uri: "/editor/{id}", handler: {
@@ -179,12 +181,59 @@ public class ResolutionController {
 			let resolutionVersion = ResolutionVersion()
 			resolutionVersion.creationTimeStamp = Date()
 			resolutionVersion.resolutionID = resolution.id
+			resolutionVersion.version = 1;		// always start with version 1
 			try resolutionVersion.save { id in
 				resolutionVersion.id = id as! Int
 			}
 
 			
 			response.redirect(path: "/editresolution/" + String(resolution.id) )
+		} catch {
+			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
+		}
+	}
+
+	/// Handles the POST request for a "newversion" route.
+	open static func newResolutionVersionHandlerPOST(request: HTTPRequest, _ response: HTTPResponse) {
+		
+		do {
+			
+			// Find the last version, which we will be cloning.
+			guard let idString = request.urlVariables["id"],
+				let id = Int(idString) else {
+					response.completed(status: .badRequest)
+					return
+			}
+			
+			let lastVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+			
+			guard lastVersion.id > 0 else {
+				throw StORMError.noRecordFound
+			}
+
+			// Create new resolution version that is a copy of the last one.
+			let newVersion = ResolutionVersion()
+			newVersion.creationTimeStamp = Date()
+			newVersion.resolutionID = id
+			newVersion.isPublished = false;
+			
+			newVersion.version		= lastVersion.version + 1;
+			
+			newVersion.title		= lastVersion.title
+			newVersion.coauthors	= lastVersion.coauthors
+			newVersion.textMarkdown	= lastVersion.textMarkdown
+			
+			try newVersion.save { id in
+				newVersion.id = id as! Int
+			}
+			
+			// "Freeze" the current version
+			lastVersion.isPublished = true;
+			try lastVersion.save()
+			
+			
+			
+			response.redirect(path: "/editresolution/" + String(id) )
 		} catch {
 			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
 		}
@@ -207,18 +256,19 @@ public class ResolutionController {
 			var values = MustacheEvaluationContext.MapType()
 			values["resolutions"] = Resolution.resolutionsToDictionary( [ resolution ] )
 			
+			
 			// Get all resolution versions too
 			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
 			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( resolutionVersions )
 
 			// Get latest version, or specified version
 			
-			if let versionIdString = request.urlVariables["versionid"]
+			if let versionString = request.urlVariables["version"]
 			{
-				if let versionId = Int(versionIdString)
+				if let version = Int(versionString)
 				{
 					// Get the current resolution version in context.
-					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingId: versionId)
+					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingVersion: version)
 					
 					guard resolutionVersion.id > 0 else {
 						throw StORMError.noRecordFound

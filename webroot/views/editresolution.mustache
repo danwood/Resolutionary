@@ -2,73 +2,90 @@
 
 {{! ASSUMES WE ARE AUTHENTICATED TO SEE THIS PAGE. }}
 
-
 <h1>Edit a resolution</h1>
 
-  <div class="container">
-
-    <div class="row">
-      <div class="six columns">
+<div class="container">
+	<div class="row">
+		<div class="six columns">
 
 {{#resolutions}}
 
-<h5><span>id: {{id}}</span></h5>
-<h5><span>Creation: {{creationTimeStamp}}</span></h5>
+			<h5><span>id: {{id}}</span></h5>
+			<h5><span>Creation: {{creationTimeStamp}}</span></h5>
 
+			<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+			<p>author ID: <input name="authorID" value="{{authorID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 
-<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
-<p>author ID: <input name="authorID" value="{{authorID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+			<p>Notes about this resolution:</p>
+			<p>
+				<textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5"
+					onblur='send(event)' onkeyup='send(event)'>{{{notesMarkdown}}}</textarea>
+			</p>
 
-<p>notes about this resolution:</p>
-<p><textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5" onblur='send(event)' onkeyup='send(event)'>{{{notesMarkdown}}}</textarea></p>
+			{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
-{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
-
-<div id='notesMarkdownRendered'></div>
+			<div id='notesMarkdownRendered'></div>
 
 {{/resolutions}}
-
 {{#resolution_version}}
 
-<p>Title: <input name="title" value="{{title}}"  onblur='send(event)' onkeyup='send(event)' /></p>
-<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+{{! RENDERED, WHEN VERSION IS ALREADY PUBLISHED }}
 
-<p>Resolution Body:</p>
-<p><textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …' onblur='send(event)' onkeyup='send(event)'>{{{textMarkdown}}}</textarea></p>
+{{#isPublished}}
+
+			<p>Version: {{version}}</p>
+			<p>Title: {{title}}</p>
+			<p>Co-Authors: {{coauthors}}</p>
+
+			<p>Resolution Body:</p>
+			<div id='textMarkdownRendered'>{{textMarkdownRendered}}</div>
+
+{{/isPublished}}
+
+{{! TEXT INPUTS WHEN VERSION IS NOT PUBLISHED YET }}
+
+{{^isPublished}}
+
+			<p>Version: {{version}}</p>
+			<p>Title: <input name="title" value="{{title}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+			<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+
+			<p>Resolution Body:</p>
+			<p>
+				<textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …'
+					onblur='send(event)' onkeyup='send(event)'>{{{textMarkdown}}}</textarea>
+			</p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
-<div id='textMarkdownRendered'></div>
+			<div id='textMarkdownRendered'></div>
+
+			<form action = "/newversion/{{id}}" method = "post">
+				<input type="submit" value="Publish as new version" name="Publish" />
+			</form>
+
+{{/isPublished}}
 
 {{/resolution_version}}
 {{^resolution_version}}
-<p>MISSING latest resolution version!</p>
+			<p>MISSING latest resolution version!</p>
 {{/resolution_version}}
-
 
 {{#resolution_versions}}
 
-<h3>ID: <a href="/editresolution/{{resolutionID}}/{{id}}">{{id}}</a></h3>
-
-{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
+			<h3>Version: <a href="/editresolution/{{resolutionID}}/{{version}}">{{version}}</a></h3>
+			{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
 
 {{/resolution_versions}}
 
+		</div>{{!six columns}}
+	</div>{{!row}}
+</div>{{!container}}
 
-      </div>
-      <div class="three columns">
-			<input type="button" value="Publish as new version" name="Publish" />
-      </div>
-    </div>
+
 {{^resolutions}}
 No resolutions…
 {{/resolutions}}
-
-
-  </div>
-
-
-
 
 
 

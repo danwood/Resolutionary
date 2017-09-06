@@ -35,12 +35,15 @@ RequestLogFile.location = "./requests.log"
 let pturnstile = TurnstilePerfectRealm()
 
 // psql -d resolutionary
+//
+// TO REGENERATE:
 // psql -c "drop database resolutionary"
+// createdb -O perfect resolutionary
 
 PostgresConnector.host        = "localhost"
 PostgresConnector.username    = "perfect"				// createuser -D -P perfect
 PostgresConnector.password    = "perfect"
-PostgresConnector.database 	  = "resolutionary"			// createdb -O perfect resolutionary
+PostgresConnector.database 	  = "resolutionary"
 PostgresConnector.port        = 5432
 
 // Set up my tables

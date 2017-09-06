@@ -24,7 +24,7 @@ class ResolutionVersion: PostgresStORM {
 	var textMarkdown: String = ""
 	var isPublished: Bool = false;
 	
-	var creationTimeStamp: Date?
+	var creationTimeStamp: Date = Date()
 	
 	override open func table() -> String { return "resolutionversions" }
 	
@@ -38,7 +38,11 @@ class ResolutionVersion: PostgresStORM {
 		textMarkdown	= this.data["textmarkdown"] as? String	?? ""
 		isPublished = this.data["ispublished"] as? Bool ?? false
 
-		creationTimeStamp	= this.data["creationtimestamp"] as? Date
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss a Z"				// WOW that was hard to reverse-engineer from what seems to be stored!
+		// https://stackoverflow.com/questions/2993578/whats-wrong-with-how-im-using-nsdateformatter
+		let dateString = this.data["creationtimestamp"] as? String ?? ""
+		creationTimeStamp = dateFormatter.date(from: dateString) ?? Date(timeIntervalSinceReferenceDate:10000000000)
 }
 	
 	func rows() -> [ResolutionVersion] {
@@ -60,6 +64,8 @@ class ResolutionVersion: PostgresStORM {
 			"coauthors": self.coauthors,
 			"textMarkdown": self.textMarkdown,
 			"isPublished": self.isPublished,
+			"creationTimeStamp": self.creationTimeStamp,
+			"textMarkdownRendered":(self.textMarkdown.markdownToHTML ?? "")			// Also this in context!
 		]
 	}
 	
@@ -79,23 +85,23 @@ class ResolutionVersion: PostgresStORM {
 	}
 	
 	// If not found, returns an empty ResolutionVersion with a zero ID
-	static func getResolutionVersion(matchingResolutionId resolutionId:Int, matchingId id:Int) throws -> ResolutionVersion {
+	static func getResolutionVersion(matchingResolutionId resolutionId:Int, matchingVersion version:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()
-		try getObj.select(whereclause: "id = $1 AND resolutionId = $2", params: [id, resolutionId], orderby: ["resolutionId DESC"])
+		try getObj.select(whereclause: "version = $1 AND resolutionId = $2", params: [version, resolutionId], orderby: ["version DESC"])
 		return getObj
 	}
 
 	// Look up all resolution versions matching the resolution ID
 	static func getResolutionVersions(matchingResolutionId resolutionID:Int) throws -> [ResolutionVersion] {
 		let getObj = ResolutionVersion()
-		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["id DESC"], cursor: StORMCursor(limit: 250, offset: 0))
+		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["version DESC"], cursor: StORMCursor(limit: 250, offset: 0))
 		return getObj.rows();
 	}
 	
 	// Look up last resolution versions matching the resolution ID
 	static func getLastResolutionVersion(matchingResolutionId resolutionID:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()
-		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["id DESC"], cursor: StORMCursor(limit: 1, offset: 0))
+		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["version DESC"], cursor: StORMCursor(limit: 1, offset: 0))
 		return getObj
 	}
 
