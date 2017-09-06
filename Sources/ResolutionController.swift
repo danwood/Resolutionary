@@ -53,7 +53,7 @@ public class EditorHandler: WebSocketSessionHandler {
 			
 			let scanner = Scanner(string: nameAndMarkdown)
 			var inputName: NSString? = ""
-			let _ = scanner.scanString("#", into:nil)
+			let ignore = scanner.scanString("#", into:nil)
 			
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&inputName), let inputName = inputName as String? {
 				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil)
