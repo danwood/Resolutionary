@@ -53,7 +53,7 @@ public class EditorHandler: WebSocketSessionHandler {
 			
 			let scanner = Scanner(string: nameAndMarkdown)
 			var inputName: NSString? = ""
-			var ignore = scanner.scanString("#", into:nil)
+			let _ = scanner.scanString("#", into:nil)
 			
 			if scanner.scanUpToCharacters(from:NSCharacterSet.newlines, into:&inputName), let inputName = inputName as String? {
 				scanner.scanCharacters(from:NSCharacterSet.newlines, into:nil)
@@ -145,6 +145,9 @@ public class ResolutionController {
 					let resolution = try Resolution.getResolution(matchingId: id)
 
 					let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+					guard resolutionVersion.id > 0 else {
+						return nil
+					}
 
 					// Return our service handler.
 					return EditorHandler(resolution, version:resolutionVersion)
@@ -216,6 +219,12 @@ public class ResolutionController {
 				{
 					// Get the current resolution version in context.
 					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingId: versionId)
+					
+					guard resolutionVersion.id > 0 else {
+						throw StORMError.noRecordFound
+					}
+
+				
 					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 				}
 				else
@@ -229,6 +238,11 @@ public class ResolutionController {
 			if (values["resolution_version"] == nil) {
 				// Get the current resolution version in context
 				let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+				
+				guard resolutionVersion.id > 0 else {
+					throw StORMError.noRecordFound
+				}
+
 				values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 			}
 
