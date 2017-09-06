@@ -38,7 +38,7 @@
 			<p>Co-Authors: {{coauthors}}</p>
 
 			<p>Resolution Body:</p>
-			<div id='textMarkdownRendered'>{{textMarkdownRendered}}</div>
+<div id='textMarkdownRendered'>{{{textMarkdownRendered}}}</div>
 
 {{/isPublished}}
 
@@ -61,7 +61,7 @@
 			<div id='textMarkdownRendered'></div>
 
 			<form action = "/newversion/{{resolutionID}}" method = "post">
-				<input type="submit" value="Publish as new version" name="Publish" />
+				<input type="submit" value="Publish as new version" name="Publish" onclick='send(this)' '/>
 			</form>
 
 {{/isPublished}}
@@ -116,9 +116,9 @@ function init()
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
 	var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
-sock.send("#notesMarkdown\n" + notesMarkdown);	// # = return processsed markdown without saving
+	if (notesMarkdown) sock.send("#notesMarkdown\n" + notesMarkdown);	// # = return processsed markdown without saving
 	var textMarkdown = document.getElementById('textMarkdown').innerHTML;
-sock.send("#textMarkdown\n" + textMarkdown);	// # = return processsed markdown without saving
+	if (textMarkdown) sock.send("#textMarkdown\n" + textMarkdown);	// # = return processsed markdown without saving
 	};
 }
 
