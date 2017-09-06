@@ -98,6 +98,27 @@ class ResolutionVersion: PostgresStORM {
 		return getObj.rows();
 	}
 	
+	// Make sure that body is not empty, and that this is not the same as previous version
+	static func canLastVersionBePublished(matchingResolutionId resolutionID:Int) throws -> Bool {
+		let getObj = ResolutionVersion()
+		try getObj.select(whereclause: "resolutionID = $1", params: [resolutionID], orderby: ["version DESC"], cursor: StORMCursor(limit: 2, offset: 0))
+		let rows = getObj.rows();
+		if 0 == rows.count { return false } // shouldn't happen but just in case.
+		let latestVersion : ResolutionVersion = rows[0]
+		if latestVersion.textMarkdown.isEmpty() || latestVersion.title.isEmpty() { return false }
+		if rows.count > 1
+		{
+			let previousVersion : ResolutionVersion = rows[1]
+			if latestVersion.textMarkdown == previousVersion.textMarkdown
+				&& latestVersion.title == previousVersion.title
+				&& latestVersion.coauthors == previousVersion.coauthors
+			{
+				return false	// Can't publish if you haven't changed it
+			}
+		}
+		return true	// I guess if it made it this far we must be OK
+	}
+
 	// Look up last resolution versions matching the resolution ID
 	static func getLastResolutionVersion(matchingResolutionId resolutionID:Int) throws -> ResolutionVersion {
 		let getObj = ResolutionVersion()

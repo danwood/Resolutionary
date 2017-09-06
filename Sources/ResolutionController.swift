@@ -210,6 +210,10 @@ public class ResolutionController {
 			guard lastVersion.id > 0 else {
 				throw StORMError.noRecordFound
 			}
+			
+			if !(try ResolutionVersion.canLastVersionBePublished(matchingResolutionId: id)) {
+				response.render(template: "/editresolution", context: ["flash": "The resolution has not been changed, so it can't be published."])
+			}
 
 			// Create new resolution version that is a copy of the last one.
 			let newVersion = ResolutionVersion()
