@@ -65,7 +65,8 @@ class ResolutionVersion: PostgresStORM {
 			"textMarkdown": self.textMarkdown,
 			"isPublished": self.isPublished,
 			"creationTimeStamp": self.creationTimeStamp,
-			"textMarkdownRendered":(self.textMarkdown.markdownToHTML ?? "")			// Also this in context!
+			"textMarkdownRendered":(self.textMarkdown.markdownToHTML ?? ""),		// Also this in context!
+			"disablePublishing": self.title.isEmpty && self.textMarkdown.isEmpty	// Also this in context!
 		]
 	}
 	

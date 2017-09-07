@@ -47,13 +47,13 @@
 {{^isPublished}}
 
 			<p>Version: {{version}}</p>
-			<p>Title: <input name="title" value="{{title}}"  onblur='send(event)' onkeyup='send(event)' /></p>
-			<p>Co-Authors: <input name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+			<p>Title: <input name="title" id="title" value="{{title}}"  onblur='send(event);updatePublishingButton();' onkeyup='send(event);updatePublishingButton();' /></p>
+			<p>Co-Authors: <input id="coauthors" name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 
 			<p>Resolution Body:</p>
 			<p>
 				<textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …'
-					onblur='send(event)' onkeyup='send(event)'>{{{textMarkdown}}}</textarea>
+					onblur='send(event);updatePublishingButton();' onkeyup='send(event);updatePublishingButton();'>{{{textMarkdown}}}</textarea>
 			</p>
 
 {{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
@@ -61,7 +61,9 @@
 			<div id='textMarkdownRendered'></div>
 
 			<form action = "/newversion/{{resolutionID}}" method = "post">
-				<input type="submit" value="Publish as new version" name="Publish" onclick='send(this)' '/>
+				<input id="publish_button"
+					{{#disablePublishing}}disabled="disabled"{{/disablePublishing}}
+					type="submit" value="Publish as new version" name="Publish" onclick='send(this)' />
 			</form>
 
 {{/isPublished}}
@@ -146,6 +148,20 @@ function send(evt) {
 }
 
 window.addEventListener('load', init, false);
+
+// This gets called after every keypress that might affect if publishing is possible.
+// The button starts out disabled if body/title are empty, so the only way to update it is to make *some* change.
+// This is close enough, quick and dirty … with more logic on the back-end.
+
+function updatePublishingButton() {
+
+	var button = document.getElementById('publish_button');
+	var body = document.getElementById('textMarkdown').innerHTML;
+	var title = document.getElementById('title').value;
+	var coauthors = document.getElementById('coauthors').value;
+
+	button.disabled = "" == body || "" == title
+}
 
 </script>
 
