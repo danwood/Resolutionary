@@ -64,8 +64,10 @@ public class EditorHandler: WebSocketSessionHandler {
 				
 				// Is there some way to dynamically set setValue forKey ?  For now just do brute force
 				switch(inputName) {
-				case "notesMarkdown":
-					self.resolution.notesMarkdown = inputValue
+				case "publicNotesMarkdown":
+					self.resolution.publicNotesMarkdown = inputValue
+				case "privateNotesMarkdown":
+					self.resolution.privateNotesMarkdown = inputValue
 				case "title":
 					self.resolutionVersion.title = inputValue
 					toSave = self.resolutionVersion;

@@ -12,13 +12,23 @@ import StORM
 import PostgresStORM
 import Foundation
 
+public enum ResolutionStatus {
+	case hidden					// Not viewable by others. For early drafts, or if author doesn't want it to be seen, etc.
+	case unlisted				// Viewable by others if they know the link, useful if sharing with limited group
+	case listed					// Findable by others in list of your resolutions and all resolutions
+	case finished				// Cannot be commented on or updated
+}
+
+
 class Resolution: PostgresStORM {
 	
 	var id: Int = 0
 	var boardID: Int = 0
 	var authorID: Int = 0
+	var status: ResolutionStatus = .hidden
 	
-	var notesMarkdown: String = ""
+	var publicNotesMarkdown: String = ""
+	var privateNotesMarkdown: String = ""
 
 
 	var creationTimeStamp: Date = Date()
@@ -30,7 +40,8 @@ class Resolution: PostgresStORM {
 		boardID = this.data["boardid"] as? Int ?? 0
 		authorID = this.data["authorid"] as? Int ?? 0
 		
-		notesMarkdown = this.data["notesmarkdown"] as? String	?? ""
+		publicNotesMarkdown = this.data["publicnotesmarkdown"] as? String	?? ""
+		privateNotesMarkdown = this.data["privatenotesmarkdown"] as? String	?? ""
 
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"                // WOW that was hard to reverse-engineer from what seems to be stored!
@@ -55,9 +66,11 @@ class Resolution: PostgresStORM {
 			"id": self.id,
 			"boardID": self.boardID,
 			"authorID": self.authorID,
-			"notesMarkdown": self.notesMarkdown,
+			"publicNotesMarkdown": self.publicNotesMarkdown,
+			"privateNotesMarkdown": self.privateNotesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
-			"notesMarkdownRendered":(self.notesMarkdown.markdownToHTML ?? "")			// Also this in context!
+			"publicNotesMarkdownRendered":(self.publicNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
+			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? "")			// Also this in context!
 		]
 	}
 	

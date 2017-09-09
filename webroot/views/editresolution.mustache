@@ -16,15 +16,23 @@
 			<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 			<p>author ID: <input name="authorID" value="{{authorID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
 
-			<p>Notes about this resolution:</p>
+			<p>Public notes about this resolution:</p>
 			<p>
-				<textarea id='notesMarkdown' name="notesMarkdown" cols="60" rows="5"
-					onblur='send(event)' onkeyup='send(event)'>{{{notesMarkdown}}}</textarea>
+				<textarea id='publicNotesMarkdown' name="publicNotesMarkdown" cols="60" rows="5"
+					onblur='send(event)' onkeyup='send(event)'>{{{publicNotesMarkdown}}}</textarea>
+			</p>
+
+			<div id='publicNotesMarkdownRendered'></div>
+
+			<p><span style="color:red">Private</span> notes about this resolution:</p>
+			<p>
+				<textarea id='privateNotesMarkdown' name="privateNotesMarkdown" cols="60" rows="5"
+					onblur='send(event)' onkeyup='send(event)'>{{{privateNotesMarkdown}}}</textarea>
 			</p>
 
 			{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
 
-			<div id='notesMarkdownRendered'></div>
+			<div id='privateNotesMarkdownRendered'></div>
 
 {{/resolutions}}
 {{#resolution_version}}
@@ -117,8 +125,10 @@ function init()
 	}
 	sock.onopen = function() {
 		// Maybe I could make this more generic, find all textAreas with Markdown and render
-	var notesMarkdown = document.getElementById('notesMarkdown').innerHTML;
-	if (notesMarkdown) sock.send("#notesMarkdown\n" + notesMarkdown);	// # = return processsed markdown without saving
+	var publicNotesMarkdown = document.getElementById('publicNotesMarkdown').innerHTML;
+	if (publicNotesMarkdown) sock.send("#publicNotesMarkdown\n" + publicNotesMarkdown);	// # = return processsed markdown without saving
+	var privateNotesMarkdown = document.getElementById('privateNotesMarkdown').innerHTML;
+	if (privateNotesMarkdown) sock.send("#privateNotesMarkdown\n" + privateNotesMarkdown);	// # = return processsed markdown without saving
 	var textMarkdown = document.getElementById('textMarkdown').innerHTML;
 	if (textMarkdown) sock.send("#textMarkdown\n" + textMarkdown);	// # = return processsed markdown without saving
 	};
