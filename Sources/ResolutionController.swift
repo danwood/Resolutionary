@@ -189,7 +189,7 @@ public class ResolutionController {
 			}
 
 			
-			response.redirect(path: "/editresolution/" + String(resolution.id) )
+			response.redirect(path: "/editresolution/" + resolution.encodedId() )
 		} catch {
 			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
 		}
@@ -202,7 +202,7 @@ public class ResolutionController {
 			
 			// Find the last version, which we will be cloning.
 			guard let idString = request.urlVariables["id"],
-				let id = Int(idString) else {
+				let id = Resolution.encodedIdToId(idString) else {
 					response.completed(status: .badRequest)
 					return
 			}
@@ -239,7 +239,7 @@ public class ResolutionController {
 			
 			
 			
-			response.redirect(path: "/editresolution/" + String(id) )
+			response.redirect(path: "/editresolution/" + idString )		// use same id string passed in
 		} catch {
 			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
 		}
@@ -252,11 +252,11 @@ public class ResolutionController {
 		do {
 			
 			guard let idString = request.urlVariables["id"],
-				let id = Int(idString) else {
+				let id = Resolution.encodedIdToId(idString) else {
 					response.completed(status: .badRequest)
 					return
 			}
-
+			
 			let resolution = try Resolution.getResolution(matchingId: id)
 			
 			var values = MustacheEvaluationContext.MapType()

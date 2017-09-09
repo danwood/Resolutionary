@@ -74,6 +74,44 @@ class Resolution: PostgresStORM {
 		]
 	}
 	
+	public func encodedId() -> String {
+		// Take the ID, mess with it mathematically, then base 64.
+		// An Xor should convert the number into something unrecognizable,
+		// then multiply by a prime number .
+		
+		let xoredId = self.id ^ 0xA3CE47B9	// arbitrary 32-bit number
+		let multiplied = xoredId * 8669		// a prime number
+		
+		// https://stackoverflow.com/questions/28680589/how-to-convert-an-int-into-nsdata-in-swift
+		var score = multiplied
+		let data = NSData(bytes: &score, length: MemoryLayout<Int>.size)
+	
+		let base64 = data.base64EncodedString(options:[]) // Don't ask for line breaks
+		
+		// Remove ending ='s to obscure that it's Base64
+		let trimmed = base64.trimmingCharacters(in: CharacterSet(charactersIn:"="))
+		
+		return trimmed
+
+	}
+	
+	public static func encodedIdToId(_ encoded: String) -> Int? {
+		
+		let length = encoded.characters.count
+		let encodedPadded = encoded.padding(toLength: length + (4 - length % 4) % 4, withPad: "=", startingAt: 0)
+
+		let data = NSData(base64Encoded: encodedPadded, options: NSData.Base64DecodingOptions.ignoreUnknownCharacters)
+
+		var multiplied: Int = 0
+		data!.getBytes(&multiplied, length: MemoryLayout<Int>.size)
+
+		let divided = multiplied / 8669
+		let xored = divided ^ 0xA3CE47B9
+		
+		return xored
+	}
+	
+	
 	static func all() throws -> [Resolution] {
 		let getObj = Resolution()
 		try getObj.findAll()
