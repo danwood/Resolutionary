@@ -146,7 +146,7 @@ public class ResolutionController {
 		routes.add(method: .get, uri: "/editresolution/{c}/{version}", handler: ResolutionController.editResolutionHandlerGET)
 
 		// Add the endpoint for the WebSocket example system
-		routes.add(method: .get, uri: "/editor/{c}", handler: {
+		routes.add(method: .get, uri: "/editor/{id}", handler: {
 			request, response in
 			
 			// To add a WebSocket service, set the handler to WebSocketHandler.
@@ -159,8 +159,8 @@ public class ResolutionController {
 					return nil
 				}
 
-				guard let idString = request.urlVariables["id"],
-					let id = Int(idString) else {
+				guard let codedIdString = request.urlVariables["id"],
+					let id = Int(codedIdString) else {
 						return nil
 				}
 								
@@ -220,8 +220,8 @@ public class ResolutionController {
 		do {
 			
 			// Find the last version, which we will be cloning.
-			guard let idString = request.urlVariables["c"],
-				let id = Resolution.encodedIdToId(idString) else {
+			guard let codedIdString = request.urlVariables["c"],
+				let id = Resolution.encodedIdToId(codedIdString) else {
 					response.completed(status: .badRequest)
 					return
 			}
@@ -258,7 +258,7 @@ public class ResolutionController {
 			
 			
 			
-			response.redirect(path: "/editresolution/" + idString )		// use same id string passed in
+			response.redirect(path: "/editresolution/" + codedIdString )		// use same id string passed in
 		} catch {
 			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
 		}
@@ -269,8 +269,8 @@ public class ResolutionController {
 		
 		do {
 			
-			guard let idString = request.urlVariables["c"],
-				let id = Resolution.encodedIdToId(idString) else {
+			guard let codedIdString = request.urlVariables["c"],
+				let id = Resolution.encodedIdToId(codedIdString) else {
 					response.completed(status: .badRequest)
 					return
 			}
@@ -375,8 +375,8 @@ public class ResolutionController {
 		
 		do {
 			
-			guard let idString = request.urlVariables["c"],
-				let id = Resolution.encodedIdToId(idString) else {
+			guard let codedIdString = request.urlVariables["c"],
+				let id = Resolution.encodedIdToId(codedIdString) else {
 					response.completed(status: .badRequest)
 					return
 			}

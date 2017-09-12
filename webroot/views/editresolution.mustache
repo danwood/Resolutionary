@@ -73,7 +73,7 @@
 
 			<div id='textMarkdownRendered'></div>
 
-			<form action = "/newversion/{{resolutionID}}" method = "post">
+			<form action = "/newversion/{{c}}" method = "post">
 				<input id="publish_button"
 					{{#disablePublishing}}disabled="disabled"{{/disablePublishing}}
 					type="submit" value="Publish as new version" name="Publish" onclick='send(this)' />
@@ -91,10 +91,10 @@
 {{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
 
 {{#isPublished}}
-			<h3>Published Version: <a href="/editresolution/{{resolutionID}}/{{version}}">{{version}}</a></h3>
+			<h3>Published Version: <a href="/editresolution/{{c}}/{{version}}">{{version}}</a></h3>
 {{/isPublished}}
 {{^isPublished}}
-			<h3><a href="/editresolution/{{resolutionID}}">Working Version {{version}}</a></h3>
+			<h3><a href="/editresolution/{{c}}">Working Version {{version}}</a></h3>
 {{/isPublished}}
 
 {{/resolution_versions}}
@@ -173,6 +173,14 @@ function updatePublishingButton() {
 	var body = document.getElementById('textMarkdown').innerHTML;
 	var title = document.getElementById('title').value;
 	var coauthors = document.getElementById('coauthors').value;
+
+if (body == null) {
+System.log('null body');
+}
+if (title == null) {
+System.log('null body');
+}
+
 
 	button.disabled = "" == body || "" == title
 }

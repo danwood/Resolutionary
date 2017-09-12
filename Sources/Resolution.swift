@@ -97,7 +97,9 @@ class Resolution: PostgresStORM {
 				["val":"listed",	"sel":((self.status==ResolutionStatus.listed)	?"selected":""), "title":"Listed",	"info":"Others can easily find this resolution for making comments"],
 				["val":"finished",	"sel":((self.status==ResolutionStatus.finished)	?"selected":""), "title":"Finished","info":"Public, but no longer accepting comments or updates"],
 			
-			]
+			],
+			
+			"c":self.encodedId()		// put in context so templates can continue using for links
 		]
 	}
 	
@@ -164,7 +166,7 @@ class Resolution: PostgresStORM {
 	static func getResolutions(matchingAuthorId authorid:Int) throws -> [Resolution] {
 		let getObj = Resolution()
 		var findObj = [String: Any]()
-		findObj["authorid"] = authorid
+		findObj["authorid"] = "\(authorid)"
 		try getObj.find(findObj)
 		return getObj.rows()
 	}

@@ -75,11 +75,6 @@
 
 			<div id='textMarkdownRendered'></div>
 
-			<form action = "/newversion/{{resolutionID}}" method = "post">
-				<input id="publish_button"
-					{{#disablePublishing}}disabled="disabled"{{/disablePublishing}}
-					type="submit" value="Publish as new version" name="Publish" onclick='send(this)' />
-			</form>
 
 {{/isPublished}}
 
@@ -93,10 +88,10 @@
 {{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
 
 {{#isPublished}}
-			<h3>Published Version: <a href="/editresolution/{{resolutionID}}/{{version}}">{{version}}</a></h3>
+			<h3>Published Version: <a href="/editresolution/{{c}}/{{version}}">{{version}}</a></h3>
 {{/isPublished}}
 {{^isPublished}}
-			<h3><a href="/editresolution/{{resolutionID}}">Working Version {{version}}</a></h3>
+			<h3><a href="/editresolution/{{c}}">Working Version {{version}}</a></h3>
 {{/isPublished}}
 
 {{/resolution_versions}}
@@ -111,74 +106,5 @@ No resolutions…
 
 
 
-<script>
-
-var sock;
-
-function init()
-{
-	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolution}}/{{id}}{{/resolution}}', 'editor');		// ... API, PROTOCOL
-	sock.onmessage=function(evt) {
-		index = evt.data.indexOf("\n");			// Received data should be dest element ID, newline, then the HTML to put into it.
-		destID = evt.data.substr(0, index);
-		newValue = evt.data.substr(index+1);
-		output = document.getElementById(destID);
-		if (output) {
-			output.innerHTML = newValue;
-		} else {
-			alert('Missing output ' + destID);
-		}
-	}
-	sock.onopen = function() {
-		// Maybe I could make this more generic, find all textAreas with Markdown and render
-	var publicNotesMarkdown = document.getElementById('publicNotesMarkdown').innerHTML;
-	if (publicNotesMarkdown) sock.send("#publicNotesMarkdown\n" + publicNotesMarkdown);	// # = return processsed markdown without saving
-	var privateNotesMarkdown = document.getElementById('privateNotesMarkdown').innerHTML;
-	if (privateNotesMarkdown) sock.send("#privateNotesMarkdown\n" + privateNotesMarkdown);	// # = return processsed markdown without saving
-	var textMarkdown = document.getElementById('textMarkdown').innerHTML;
-	if (textMarkdown) sock.send("#textMarkdown\n" + textMarkdown);	// # = return processsed markdown without saving
-	};
-}
-
-var periodicTimer;	// Process, queued for a bit into the future, every N seconds, so when typing fast we see results frequently.
-					// Note that hitting return sends text IMMEDIATELY for processing.
-var evtTarget;		// Save event that timer is referring to
-
-function send(evt) {
-
-	if (!(evt instanceof KeyboardEvent) || 13 == evt.keyCode) {				// If a newline, send it immediately.
-		clearTimeout(periodicTimer);
-		periodicTimer = null;
-		sock.send(evt.currentTarget.name + '\n' + evt.currentTarget.value);
-	} else {
-		if (!periodicTimer) {
-
-			evtTarget = evt.currentTarget;
-			periodicTimer = setTimeout(function() {
-				sock.send(evtTarget.name + '\n' + evtTarget.value);		// Send to server for immediate saving and possibly Markdown translation
-				clearTimeout(periodicTimer);
-				periodicTimer = null;
-			}, 3000);
-		}
-	}
-}
-
-window.addEventListener('load', init, false);
-
-// This gets called after every keypress that might affect if publishing is possible.
-// The button starts out disabled if body/title are empty, so the only way to update it is to make *some* change.
-// This is close enough, quick and dirty … with more logic on the back-end.
-
-function updatePublishingButton() {
-
-	var button = document.getElementById('publish_button');
-	var body = document.getElementById('textMarkdown').innerHTML;
-	var title = document.getElementById('title').value;
-	var coauthors = document.getElementById('coauthors').value;
-
-	button.disabled = "" == body || "" == title
-}
-
-</script>
 
 {{>footer}}
