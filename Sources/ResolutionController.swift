@@ -77,6 +77,14 @@ public class EditorHandler: WebSocketSessionHandler {
 				case "coauthors":
 					self.resolutionVersion.coauthors = inputValue
 					toSave = self.resolutionVersion;
+				case "resolution_status":
+					switch(inputValue) {
+						case "unlisted":self.resolution.status = ResolutionStatus.unlisted
+						case "listed":	self.resolution.status = ResolutionStatus.listed
+						case "finished":self.resolution.status = ResolutionStatus.finished
+						case "hidden":	self.resolution.status = ResolutionStatus.hidden
+						default:		self.resolution.status = ResolutionStatus.hidden	// in case of a weird input
+					}
 				default:
 					print("NOT HANDLED: ##### Set \(inputName) of \(self.resolution) to \(inputValue)")
 				}

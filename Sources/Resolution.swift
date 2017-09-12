@@ -45,6 +45,17 @@ class Resolution: PostgresStORM {
 		
 		publicNotesMarkdown = this.data["publicnotesmarkdown"] as? String	?? ""
 		privateNotesMarkdown = this.data["privatenotesmarkdown"] as? String	?? ""
+		
+		// PostgresStORM seems to store an enum as text, so to convert back from database we need to do string matching.
+		// WE WOULD PREFER THIS:  status = this.data["status"] as? ResolutionStatus ?? .hidden
+		//
+		switch(this.data["status"] as? String ?? "") {
+			case "unlisted":status = ResolutionStatus.unlisted
+			case "listed":	status = ResolutionStatus.listed
+			case "finished":status = ResolutionStatus.finished
+			case "hidden":	status = ResolutionStatus.hidden
+			default:		status = ResolutionStatus.hidden	// in case of a weird input
+		}
 
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"                // WOW that was hard to reverse-engineer from what seems to be stored!
@@ -74,8 +85,9 @@ class Resolution: PostgresStORM {
 			"creationTimeStamp": self.creationTimeStamp,
 			"publicNotesMarkdownRendered":(self.publicNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
 			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
+			"status":self.status,
 			
-			"resolution_options": [
+			"status_options": [
 			
 				["val":"hidden",	"sel":((self.status==ResolutionStatus.hidden)	?"selected":""), "title":"Hidden",	"info":"nobody else can view this"],
 				["val":"unlisted",	"sel":((self.status==ResolutionStatus.unlisted)	?"selected":""), "title":"Unlisted","info":"Viewable by others only if they know the link"],
