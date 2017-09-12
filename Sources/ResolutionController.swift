@@ -344,8 +344,14 @@ public class ResolutionController {
 			
 			
 			var values = MustacheEvaluationContext.MapType()
-			values["resolution"] = Resolution.resolutionsToDictionary( [ resolution ] )
-						
+			
+			let myResolutions = try Resolution.getResolutions(matchingAuthorId:0)
+			values["my_resolution"] = Resolution.resolutionsToDictionary( myResolutions )
+			
+			let publicResolutions = try Resolution.getPublicResolutions()
+
+			values["pubic_resolution"] = Resolution.resolutionsToDictionary( publicResolutions )
+
 			response.render(template: "resolutions", context: values)
 			
 		} catch {

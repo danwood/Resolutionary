@@ -30,6 +30,7 @@ class Resolution: PostgresStORM {
 	var authorID: Int = 0
 	var status: ResolutionStatus = .hidden
 	
+	var currentTitle: String = ""				// Title may change, but this is the current/latest version of it. Redundant but joins are hard right now.
 	var publicNotesMarkdown: String = ""
 	var privateNotesMarkdown: String = ""
 
@@ -42,6 +43,7 @@ class Resolution: PostgresStORM {
 		id = this.data["id"] as? Int ?? 0
 		boardID = this.data["boardid"] as? Int ?? 0
 		authorID = this.data["authorid"] as? Int ?? 0
+		currentTitle = this.data["currenttitle"] as? String ?? ""
 		
 		publicNotesMarkdown = this.data["publicnotesmarkdown"] as? String	?? ""
 		privateNotesMarkdown = this.data["privatenotesmarkdown"] as? String	?? ""
@@ -78,6 +80,7 @@ class Resolution: PostgresStORM {
 	func asDictionary() -> [String: Any] {
 		return [
 			"id": self.id,
+			"currentTitle": self.currentTitle,
 			"boardID": self.boardID,
 			"authorID": self.authorID,
 			"publicNotesMarkdown": self.publicNotesMarkdown,
@@ -85,9 +88,9 @@ class Resolution: PostgresStORM {
 			"creationTimeStamp": self.creationTimeStamp,
 			"publicNotesMarkdownRendered":(self.publicNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
 			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
-			"status":self.status,
+			"status":self.status,	// in case we need status as a number/enum
 			
-			"status_options": [
+			"status_options": [		// for rendering template
 			
 				["val":"hidden",	"sel":((self.status==ResolutionStatus.hidden)	?"selected":""), "title":"Hidden",	"info":"nobody else can view this"],
 				["val":"unlisted",	"sel":((self.status==ResolutionStatus.unlisted)	?"selected":""), "title":"Unlisted","info":"Viewable by others only if they know the link"],
@@ -158,15 +161,22 @@ class Resolution: PostgresStORM {
 		return getObj
 	}
 	
-	static func getResolutions(matchingShort short:String) throws -> [Resolution] {
+	static func getResolutions(matchingAuthorId authorid:Int) throws -> [Resolution] {
 		let getObj = Resolution()
 		var findObj = [String: Any]()
-		findObj["short"] = short
+		findObj["authorid"] = authorid
 		try getObj.find(findObj)
 		return getObj.rows()
 	}
 	
-
+	static func getPublicResolutions() throws -> [Resolution] {
+		let getObj = Resolution()
+		var findObj = [String: Any]()
+		findObj["status"] = "listed"
+		try getObj.find(findObj)
+		return getObj.rows()
+	}
+	
 	
 	static func resolutionsToDictionary(_ resolutions: [Resolution]) -> [[String: Any]] {
 		var resolutionsDict: [[String: Any]] = []

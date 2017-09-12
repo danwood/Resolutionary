@@ -5,21 +5,37 @@
 <h1>Resolutions</h1>
 
 
-    {{#resolutions}}
+    {{#my_resolutions}}
     <div class="row">
       <div class="three columns">
-        <h5><span>{{short}}</span></h5>
+		<h5><a href="/resolution/{{id}}">{{title}}</a></h5>
       </div>
       <div class="six columns">
-        <p><span>{{long}}</span></p>
+        <p><span>{{authorid}}</span></p>
       </div>
       <div class="three columns">
       </div>
     </div>
-    {{/resolutions}}
-	{{^resolutions}}
-	<p>No resolutions…</p>
-	{{/resolutions}}
+    {{/my_resolutions}}
+	{{^my_resolutions}}
+	<p>No resolutions of mine…</p>
+	{{/my_resolutions}}
+
+    {{#public_resolutions}}
+    <div class="row">
+      <div class="three columns">
+		<h5><a href="/resolution/{{id}}">{{title}}</a></h5>
+      </div>
+      <div class="six columns">
+        <p><span>{{authorid}}</span></p>
+      </div>
+      <div class="three columns">
+      </div>
+    </div>
+    {{/public_resolutions}}
+	{{^public_resolutions}}
+	<p>No public resolutions…</p>
+	{{/public_resolutions}}
 
 
 {{>footer}}
