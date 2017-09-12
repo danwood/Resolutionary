@@ -11,98 +11,36 @@
 
 {{#resolution}}
 
-			<h5>Resolution Status:</h5>
-			<select name="resolution_status" id="resolution_status" onchange='send(event)'>
-{{#status_options}}
-			<option value="{{val}}" title="{{title}}" {{sel}}>{{title}} — {{info}}</option>
-{{/status_options}}
-			</select>
+			<h5>Resolution Status: {{status_title}}</h5>
 			<h5><span>Resolution ID: {{id}}</span></h5>
 			<h5><span>Creation: {{creationTimeStamp}}</span></h5>
 
-			<p>Board ID: <input name="boardID" value="{{boardID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
-			<p>author ID: <input name="authorID" value="{{authorID}}"  onblur='send(event)' onkeyup='send(event)' /></p>
+			<p>Board ID: {{boardID}}</p>
+			<p>author ID: {{authorID}}</p>
 
 			<p>Public notes about this resolution:</p>
-			<p>
-				<textarea id='publicNotesMarkdown' name="publicNotesMarkdown" cols="60" rows="5"
-					onblur='send(event)' onkeyup='send(event)'>{{{publicNotesMarkdown}}}</textarea>
-			</p>
+			<div id='publicNotesMarkdownRendered'>{{{publicNotesMarkdown}}}</div>
 
-			<div id='publicNotesMarkdownRendered'></div>
-
+{{#privateNotesMarkdownRendered}}
 			<p><span style="color:red">Private</span> notes about this resolution:</p>
-			<p>
-				<textarea id='privateNotesMarkdown' name="privateNotesMarkdown" cols="60" rows="5"
-					onblur='send(event)' onkeyup='send(event)'>{{{privateNotesMarkdown}}}</textarea>
-			</p>
+			<div id='privateNotesMarkdownRendered'>{{{privateNotesMarkdownRendered}}}</div>
+{{/privateNotesMarkdownRendered}}
 
-			{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
-
-			<div id='privateNotesMarkdownRendered'></div>
 
 {{/resolution}}
 {{#resolution_version}}
 
 {{! RENDERED, WHEN VERSION IS ALREADY PUBLISHED }}
 
-{{#isPublished}}
-
-			<p>Version: {{version}} (hidden ID {{id}})</p>
-			<p>Title: {{title}}</p>
 			<p>Co-Authors: {{coauthors}}</p>
 
 			<p>Resolution Body:</p>
-<div id='textMarkdownRendered'>{{{textMarkdownRendered}}}</div>
-
-{{/isPublished}}
-
-{{! TEXT INPUTS WHEN VERSION IS NOT PUBLISHED YET }}
-
-{{^isPublished}}
-
-			<p>Version: {{version}}</p>
-			<p>Title: <input name="title" id="title" value="{{title}}"  onblur='send(event);updatePublishingButton();' onkeyup='send(event);updatePublishingButton();' /></p>
-			<p>Co-Authors: <input id="coauthors" name="coauthors" value="{{coauthors}}"  onblur='send(event)' onkeyup='send(event)' /></p>
-
-			<p>Resolution Body:</p>
-			<p>
-				<textarea id='textMarkdown' name="textMarkdown" cols="60" rows="15" placeholder='WHEREAS …'
-					onblur='send(event);updatePublishingButton();' onkeyup='send(event);updatePublishingButton();'>{{{textMarkdown}}}</textarea>
-			</p>
-
-{{! FIXME: The textarea should be escaped, but then newlines get converted to BR tags in the textarea! }}
-
-			<div id='textMarkdownRendered'></div>
-
-
-{{/isPublished}}
-
-{{/resolution_version}}
-{{^resolution_version}}
-			<p>MISSING latest resolution version!</p>
-{{/resolution_version}}
-
-{{#resolution_versions}}
-
-{{! It would be nice to have a function to show an excerpt of what has been changed/added from a version relative to its previous version }}
-
-{{#isPublished}}
-			<h3>Published Version: <a href="/editresolution/{{c}}/{{version}}">{{version}}</a></h3>
-{{/isPublished}}
-{{^isPublished}}
-			<h3><a href="/editresolution/{{c}}">Working Version {{version}}</a></h3>
-{{/isPublished}}
-
-{{/resolution_versions}}
+			<div id='textMarkdownRendered'>{{{textMarkdownRendered}}}</div>
 
 		</div>{{!six columns}}
 	</div>{{!row}}
 
 
-{{^resolution}}
-No resolutions…
-{{/resolution}}
 
 
 

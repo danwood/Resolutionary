@@ -78,6 +78,7 @@ class Resolution: PostgresStORM {
 	}
 	
 	func asDictionary() -> [String: Any] {
+		
 		return [
 			"id": self.id,
 			"currentTitle": self.currentTitle,
@@ -89,6 +90,15 @@ class Resolution: PostgresStORM {
 			"publicNotesMarkdownRendered":(self.publicNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
 			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
 			"status":self.status,	// in case we need status as a number/enum
+			
+			"status_title": {
+				switch(self.status) {
+					case ResolutionStatus.hidden:	return "Hidden"
+					case ResolutionStatus.unlisted:	return "Unlisted"
+					case ResolutionStatus.listed:	return "Listed"
+					case ResolutionStatus.finished:	return "Finished"
+				}
+			}(),	// anonymous closure
 			
 			"status_options": [		// for rendering template
 			
@@ -188,20 +198,19 @@ class Resolution: PostgresStORM {
 		return resolutionsDict
 	}
 	
-//	static func all() throws -> String {
-//		return try allAsDictionary().jsonEncodedString()
-//	}
-	
-
-	static func allAsDictionary() throws -> [[String: Any]] {
-		let resolutions = try Resolution.all()
-		return resolutionsToDictionary(resolutions)
+	static func resolutionsToDictionary(resolutions:[Resolution], sanitizedExceptAuthorID myAuthorID:Int) -> [[String: Any]] {
+		var resolutionsDict: [[String: Any]] = []
+		for row in resolutions {
+			var rowDict = row.asDictionary()
+			if (row.authorID != myAuthorID) {
+				rowDict.removeValue(forKey:"privateNotesMarkdownRendered")
+				if (row.status != ResolutionStatus.listed) {
+					rowDict = ["currentTitle":"NOT AVAILABLE"]		// hackish way to make sure we don't expose
+				}
+			}
+			resolutionsDict.append(rowDict)
+		}
+		return resolutionsDict
 	}
-	
-	
-	
-	
-	
-	
-	
+
 }
