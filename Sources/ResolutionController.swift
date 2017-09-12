@@ -130,6 +130,10 @@ public class ResolutionController {
 
 		routes.add(method: .post, uri: "/newversion/{id}", handler: ResolutionController.newResolutionVersionHandlerPOST)
 
+		routes.add(method: .get, uri: "/resolutions", handler: ResolutionController.resolutionsHandlerGET)
+
+		routes.add(method: .get, uri: "/resolution/{id}", handler: ResolutionController.viewResolutionHandlerGET)
+
 		routes.add(method: .get, uri: "/editresolution/{id}", handler: ResolutionController.editResolutionHandlerGET)
 		
 		routes.add(method: .get, uri: "/editresolution/{id}/{version}", handler: ResolutionController.editResolutionHandlerGET)
@@ -253,6 +257,105 @@ public class ResolutionController {
 		}
 	}
 
+	
+	open static func viewResolutionHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
+		
+		do {
+			
+			guard let idString = request.urlVariables["id"],
+				let id = Resolution.encodedIdToId(idString) else {
+					response.completed(status: .badRequest)
+					return
+			}
+			
+			let resolution = try Resolution.getResolution(matchingId: id)
+			
+			var values = MustacheEvaluationContext.MapType()
+			values["resolution"] = Resolution.resolutionsToDictionary( [ resolution ] )
+			
+			
+			// Get all resolution versions too
+			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
+			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( resolutionVersions )
+			
+			// Get latest version, or specified version
+			
+			if let versionString = request.urlVariables["version"]
+			{
+				if let version = Int(versionString)
+				{
+					// Get the current resolution version in context.
+					let resolutionVersion = try ResolutionVersion.getResolutionVersion(matchingResolutionId:id, matchingVersion: version)
+					
+					guard resolutionVersion.id > 0 else {
+						throw StORMError.noRecordFound
+					}
+					
+					
+					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+				}
+				else
+				{
+					response.completed(status: .badRequest)
+					return
+					
+				}
+			}
+			// If we couldn't parse, or find given ID, get the lastest version.
+			if (values["resolution_version"] == nil) {
+				// Get the current resolution version in context
+				let resolutionVersion = try ResolutionVersion.getLastResolutionVersion(matchingResolutionId: id)
+				
+				guard resolutionVersion.id > 0 else {
+					throw StORMError.noRecordFound
+				}
+				
+				values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
+			}
+			
+			
+			
+			response.render(template: "editresolution", context: values)
+			
+		} catch {
+			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
+		}
+	}
+
+	open static func resolutionsHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
+	
+		do {
+			
+
+	/*
+
+			Maybe want to separate lists:  Resolutions I can SEE, and resolutions I authored.
+			
+			Maybe I can store the latest title in the Resolution
+			
+			database for easy access, but keep the versioned title as well so we can see the evolution of it!
+
+
+
+
+
+
+*/
+			
+			
+			var values = MustacheEvaluationContext.MapType()
+			values["resolution"] = Resolution.resolutionsToDictionary( [ resolution ] )
+						
+			response.render(template: "resolutions", context: values)
+			
+		} catch {
+			response.render(template: "resolutions", context: ["flash": "An unknown error occurred."])
+		}
+	}
+
+
+
+
 
 	/// Handles the POST request for a "newresolution" route.  Creates a new empty record.  We will be saving to the record in real time, no submit button.  Websockets.
 	open static func editResolutionHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
@@ -312,12 +415,11 @@ public class ResolutionController {
 
 			
 			
-			response.render(template: "editresolution", context: values)
+			response.render(template: "resolution", context: values)
 			
 		} catch {
-			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
+			response.render(template: "resolution", context: ["flash": "An unknown error occurred."])
 		}
 	}
-
-
 }
+
