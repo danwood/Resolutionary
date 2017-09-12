@@ -19,6 +19,9 @@ public enum ResolutionStatus {
 	case finished				// Cannot be commented on or updated
 }
 
+let primeMultiplier = 8669
+let xor32Bit = 0xA3CE47B9
+
 
 class Resolution: PostgresStORM {
 	
@@ -70,17 +73,27 @@ class Resolution: PostgresStORM {
 			"privateNotesMarkdown": self.privateNotesMarkdown,
 			"creationTimeStamp": self.creationTimeStamp,
 			"publicNotesMarkdownRendered":(self.publicNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
-			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? "")			// Also this in context!
+			"privateNotesMarkdownRendered":(self.privateNotesMarkdown.markdownToHTML ?? ""),			// Also this in context!
+			
+			"resolution_options": [
+			
+				["val":"hidden",	"sel":((self.status==ResolutionStatus.hidden)	?"selected":""), "title":"Hidden",	"info":"nobody else can view this"],
+				["val":"unlisted",	"sel":((self.status==ResolutionStatus.unlisted)	?"selected":""), "title":"Unlisted","info":"Viewable by others only if they know the link"],
+				["val":"listed",	"sel":((self.status==ResolutionStatus.listed)	?"selected":""), "title":"Listed",	"info":"Others can easily find this resolution for making comments"],
+				["val":"finished",	"sel":((self.status==ResolutionStatus.finished)	?"selected":""), "title":"Finished","info":"Public, but no longer accepting comments or updates"],
+			
+			]
 		]
 	}
+	
 	
 	public func encodedId() -> String {
 		// Take the ID, mess with it mathematically, then base 64.
 		// An Xor should convert the number into something unrecognizable,
 		// then multiply by a prime number .
 		
-		let xoredId = self.id ^ 0xA3CE47B9	// arbitrary 32-bit number
-		let multiplied = xoredId * 8669		// a prime number
+		let xoredId = self.id ^ xor32Bit
+		let multiplied = xoredId * primeMultiplier
 		
 		// https://stackoverflow.com/questions/28680589/how-to-convert-an-int-into-nsdata-in-swift
 		var score = multiplied
@@ -100,13 +113,20 @@ class Resolution: PostgresStORM {
 		let length = encoded.characters.count
 		let encodedPadded = encoded.padding(toLength: length + (4 - length % 4) % 4, withPad: "=", startingAt: 0)
 
-		let data = NSData(base64Encoded: encodedPadded, options: NSData.Base64DecodingOptions.ignoreUnknownCharacters)
+		guard let data = NSData(base64Encoded: encodedPadded, options: NSData.Base64DecodingOptions.ignoreUnknownCharacters) else {
+			return nil
+		}
 
 		var multiplied: Int = 0
-		data!.getBytes(&multiplied, length: MemoryLayout<Int>.size)
+		data.getBytes(&multiplied, length: MemoryLayout<Int>.size)
 
-		let divided = multiplied / 8669
-		let xored = divided ^ 0xA3CE47B9
+		let divided = multiplied / primeMultiplier
+		
+		if (0 != multiplied % primeMultiplier) {			// Make sure it is an exact multiple! Otherwise somebody is trying to hack the number.
+			return nil
+		}
+		
+		let xored = divided ^ xor32Bit
 		
 		return xored
 	}

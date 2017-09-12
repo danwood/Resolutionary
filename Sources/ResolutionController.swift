@@ -260,7 +260,7 @@ public class ResolutionController {
 			let resolution = try Resolution.getResolution(matchingId: id)
 			
 			var values = MustacheEvaluationContext.MapType()
-			values["resolutions"] = Resolution.resolutionsToDictionary( [ resolution ] )
+			values["resolution"] = Resolution.resolutionsToDictionary( [ resolution ] )
 			
 			
 			// Get all resolution versions too

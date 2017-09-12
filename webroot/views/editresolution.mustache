@@ -8,8 +8,14 @@
 	<div class="row">
 		<div class="six columns">
 
-{{#resolutions}}
+{{#resolution}}
 
+			<h5>Resolution Status:</h5>
+			<select id="resolution_status" onchange='send(event)'>
+{{#resolution_options}}
+			<option value="{{val}}" title="{{title}}" {{sel}}>{{title}} — {{info}}</option>
+{{/resolution_options}}
+			</select>
 			<h5><span>Resolution ID: {{id}}</span></h5>
 			<h5><span>Creation: {{creationTimeStamp}}</span></h5>
 
@@ -34,7 +40,7 @@
 
 			<div id='privateNotesMarkdownRendered'></div>
 
-{{/resolutions}}
+{{/resolution}}
 {{#resolution_version}}
 
 {{! RENDERED, WHEN VERSION IS ALREADY PUBLISHED }}
@@ -99,9 +105,9 @@
 </div>{{!container}}
 
 
-{{^resolutions}}
+{{^resolution}}
 No resolutions…
-{{/resolutions}}
+{{/resolution}}
 
 
 
@@ -111,7 +117,7 @@ var sock;
 
 function init()
 {
-	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolutions}}/{{id}}{{/resolutions}}', 'editor');		// ... API, PROTOCOL
+	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolution}}/{{id}}{{/resolution}}', 'editor');		// ... API, PROTOCOL
 	sock.onmessage=function(evt) {
 		index = evt.data.indexOf("\n");			// Received data should be dest element ID, newline, then the HTML to put into it.
 		destID = evt.data.substr(0, index);
