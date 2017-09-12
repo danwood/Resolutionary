@@ -284,7 +284,7 @@ public class ResolutionController {
 			// Get all resolution versions too
 			let resolutionVersions = try ResolutionVersion.getResolutionVersions(matchingResolutionId: id)
 			values["resolution_versions"] = ResolutionVersion.resolutionVersionsToDictionary( resolutionVersions )
-			
+
 			// Get latest version, or specified version
 			
 			if let versionString = request.urlVariables["version"]
@@ -297,15 +297,15 @@ public class ResolutionController {
 					guard resolutionVersion.id > 0 else {
 						throw StORMError.noRecordFound
 					}
-					
-					
+
+				
 					values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 				}
 				else
 				{
 					response.completed(status: .badRequest)
 					return
-					
+
 				}
 			}
 			// If we couldn't parse, or find given ID, get the lastest version.
@@ -316,16 +316,16 @@ public class ResolutionController {
 				guard resolutionVersion.id > 0 else {
 					throw StORMError.noRecordFound
 				}
-				
+
 				values["resolution_version"] = ResolutionVersion.resolutionVersionsToDictionary( [ resolutionVersion ] )
 			}
+
 			
 			
-			
-			response.render(template: "editresolution", context: values)
+			response.render(template: "resolution", context: values)
 			
 		} catch {
-			response.render(template: "/editresolution", context: ["flash": "An unknown error occurred."])
+			response.render(template: "resolution", context: ["flash": "An unknown error occurred."])
 		}
 	}
 
@@ -428,10 +428,10 @@ public class ResolutionController {
 
 			
 			
-			response.render(template: "resolution", context: values)
+			response.render(template: "editresolution", context: values)
 			
 		} catch {
-			response.render(template: "resolution", context: ["flash": "An unknown error occurred."])
+			response.render(template: "editresolution", context: ["flash": "An unknown error occurred."])
 		}
 	}
 }
