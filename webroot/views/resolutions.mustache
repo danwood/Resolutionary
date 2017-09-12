@@ -8,7 +8,7 @@
     {{#my_resolutions}}
     <div class="row">
       <div class="three columns">
-		<h5><a href="/resolution/{{id}}">{{title}}</a></h5>
+		<h5><a href="/resolution/{{encodedId}}">{{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
         <p><span>{{authorid}}</span></p>
@@ -24,12 +24,13 @@
     {{#public_resolutions}}
     <div class="row">
       <div class="three columns">
-		<h5><a href="/resolution/{{id}}">{{title}}</a></h5>
+		<h5><a href="/resolution/{{encodedId}}">{{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
-        <p><span>{{authorid}}</span></p>
+        <p><span>{{authorId}}</span></p>
       </div>
       <div class="three columns">
+		{{publicNotesMarkdownRendered}}
       </div>
     </div>
     {{/public_resolutions}}

@@ -91,6 +91,13 @@ public class EditorHandler: WebSocketSessionHandler {
 				if (!ignore) {
 					do {
 						try toSave.save()
+						
+						
+						// HACK -- SPECIAL CASE OF TWO THINGS BEING SAVED.
+						if inputName == "title" {
+							self.resolution.currentTitle = inputValue
+							try self.resolution.save()
+						}
 					}
 					catch {
 						print("Unable to save resolution")
@@ -128,18 +135,18 @@ public class ResolutionController {
 		
 		routes.add(method: .post, uri: "/newresolution", handler: ResolutionController.newResolutionHandlerPOST)
 
-		routes.add(method: .post, uri: "/newversion/{id}", handler: ResolutionController.newResolutionVersionHandlerPOST)
+		routes.add(method: .post, uri: "/newversion/{c}", handler: ResolutionController.newResolutionVersionHandlerPOST)
 
 		routes.add(method: .get, uri: "/resolutions", handler: ResolutionController.resolutionsHandlerGET)
 
-		routes.add(method: .get, uri: "/resolution/{id}", handler: ResolutionController.viewResolutionHandlerGET)
+		routes.add(method: .get, uri: "/resolution/{c}", handler: ResolutionController.viewResolutionHandlerGET)
 
-		routes.add(method: .get, uri: "/editresolution/{id}", handler: ResolutionController.editResolutionHandlerGET)
+		routes.add(method: .get, uri: "/editresolution/{c}", handler: ResolutionController.editResolutionHandlerGET)
 		
-		routes.add(method: .get, uri: "/editresolution/{id}/{version}", handler: ResolutionController.editResolutionHandlerGET)
+		routes.add(method: .get, uri: "/editresolution/{c}/{version}", handler: ResolutionController.editResolutionHandlerGET)
 
 		// Add the endpoint for the WebSocket example system
-		routes.add(method: .get, uri: "/editor/{id}", handler: {
+		routes.add(method: .get, uri: "/editor/{c}", handler: {
 			request, response in
 			
 			// To add a WebSocket service, set the handler to WebSocketHandler.
@@ -213,7 +220,7 @@ public class ResolutionController {
 		do {
 			
 			// Find the last version, which we will be cloning.
-			guard let idString = request.urlVariables["id"],
+			guard let idString = request.urlVariables["c"],
 				let id = Resolution.encodedIdToId(idString) else {
 					response.completed(status: .badRequest)
 					return
@@ -262,7 +269,7 @@ public class ResolutionController {
 		
 		do {
 			
-			guard let idString = request.urlVariables["id"],
+			guard let idString = request.urlVariables["c"],
 				let id = Resolution.encodedIdToId(idString) else {
 					response.completed(status: .badRequest)
 					return
@@ -368,7 +375,7 @@ public class ResolutionController {
 		
 		do {
 			
-			guard let idString = request.urlVariables["id"],
+			guard let idString = request.urlVariables["c"],
 				let id = Resolution.encodedIdToId(idString) else {
 					response.completed(status: .badRequest)
 					return

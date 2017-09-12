@@ -46,7 +46,7 @@
 
 {{#isPublished}}
 
-			<p>Version: {{version}} (hidden ID {{id}})</p>
+			<p>Version: {{version}} (hidden ID {{id}}, encoded ID {{c}})</p>
 			<p>Title: {{title}}</p>
 			<p>Co-Authors: {{coauthors}}</p>
 
@@ -115,7 +115,7 @@ var sock;
 
 function init()
 {
-	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolution}}/{{id}}{{/resolution}}', 'editor');		// ... API, PROTOCOL
+	sock=new WebSocket('ws://' + window.location.host + '/editor{{#resolution}}/{{c}}{{/resolution}}', 'editor');		// ... API, PROTOCOL
 	sock.onmessage=function(evt) {
 		index = evt.data.indexOf("\n");			// Received data should be dest element ID, newline, then the HTML to put into it.
 		destID = evt.data.substr(0, index);
