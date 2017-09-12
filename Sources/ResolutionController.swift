@@ -146,7 +146,7 @@ public class ResolutionController {
 		routes.add(method: .get, uri: "/editresolution/{c}/{version}", handler: ResolutionController.editResolutionHandlerGET)
 
 		// Add the endpoint for the WebSocket example system
-		routes.add(method: .get, uri: "/editor/{id}", handler: {
+		routes.add(method: .get, uri: "/editor/{c}", handler: {
 			request, response in
 			
 			// To add a WebSocket service, set the handler to WebSocketHandler.
@@ -159,8 +159,8 @@ public class ResolutionController {
 					return nil
 				}
 
-				guard let codedIdString = request.urlVariables["id"],
-					let id = Int(codedIdString) else {
+				guard let codedIdString = request.urlVariables["c"],
+					let id = Resolution.encodedIdToId(codedIdString) else {
 						return nil
 				}
 								

@@ -7,12 +7,13 @@
     {{#my_resolutions}}
     <div class="row">
       <div class="three columns">
-		<h5><a href="/resolution/{{c}}">TITLE: {{currentTitle}}</a></h5>
+		<h5><a href="/editresolution/{{c}}">TITLE: {{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
-		<p><span>AUTHOR ID: {{authorid}}</span></p>
+		<p><span>AUTHOR ID: {{authorID}}</span></p>
       </div>
       <div class="three columns">
+PRIVATE NOTES: {{{privateNotesMarkdownRendered}}}
       </div>
     </div>
     {{/my_resolutions}}
@@ -28,7 +29,7 @@
 		<h5><a href="/resolution/{{c}}">TITLE: {{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
-		<p><span>AUTHOR ID:{{authorId}}</span></p>
+		<p><span>AUTHOR ID:{{authorID}}</span></p>
       </div>
       <div class="three columns">
 		PUBLIC NOTES: {{{publicNotesMarkdownRendered}}}
