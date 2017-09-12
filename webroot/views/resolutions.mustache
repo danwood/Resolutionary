@@ -2,16 +2,15 @@
 
 {{! ASSUMES WE ARE AUTHENTICATED TO SEE THIS PAGE. }}
 
-<h1>Resolutions</h1>
-
+<h1>My Resolutions</h1>
 
     {{#my_resolutions}}
     <div class="row">
       <div class="three columns">
-		<h5><a href="/resolution/{{encodedId}}">{{currentTitle}}</a></h5>
+		<h5><a href="/resolution/{{c}}">TITLE: {{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
-        <p><span>{{authorid}}</span></p>
+		<p><span>AUTHOR ID: {{authorid}}</span></p>
       </div>
       <div class="three columns">
       </div>
@@ -21,16 +20,18 @@
 	<p>No resolutions of mine…</p>
 	{{/my_resolutions}}
 
+<h1>Public Resolutions</h1>
+
     {{#public_resolutions}}
     <div class="row">
       <div class="three columns">
-		<h5><a href="/resolution/{{encodedId}}">{{currentTitle}}</a></h5>
+		<h5><a href="/resolution/{{c}}">TITLE: {{currentTitle}}</a></h5>
       </div>
       <div class="six columns">
-        <p><span>{{authorId}}</span></p>
+		<p><span>AUTHOR ID:{{authorId}}</span></p>
       </div>
       <div class="three columns">
-		{{publicNotesMarkdownRendered}}
+		PUBLIC NOTES: {{{publicNotesMarkdownRendered}}}
       </div>
     </div>
     {{/public_resolutions}}
